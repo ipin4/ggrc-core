@@ -8,23 +8,21 @@
 {{#if_task_group_assignee_privileges instance}}
 {{^if_equals parent_instance.status 'Inactive'}}
 <div class="tree-item-add">
-  <click-filter>
-    <a
-      class="btn btn-small btn-white"
-      rel="tooltip"
-      data-placement="right"
-      data-original-title="Add Object"
-      href="javascript://"
-      data-toggle="unified-mapper"
-      data-modal-class="modal-wide"
-      data-modal-reset="reset"
-      data-join-mapping="objects"
-      data-join-object-id="{{instance.id}}"
-      data-join-object-type="TaskGroup"
-      data-exclude-option-types="">
-      <i class="fa fa-plus-circle"></i>
-    </a>
-  </click-filter>
+  <a
+    class="btn btn-small btn-white"
+    rel="tooltip"
+    data-placement="right"
+    data-original-title="Add Object"
+    href="javascript://"
+    data-toggle="unified-mapper"
+    data-modal-class="modal-wide"
+    data-modal-reset="reset"
+    data-join-mapping="objects"
+    data-join-object-id="{{instance.id}}"
+    data-join-object-type="TaskGroup"
+    data-exclude-option-types="">
+    <i class="fa fa-plus-circle"></i>
+  </a>
 </div>
 {{/if_equals}}
 {{/if}}

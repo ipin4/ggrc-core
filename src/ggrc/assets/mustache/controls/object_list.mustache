@@ -87,20 +87,18 @@
       <div class="span12 section-expandable">
 
         {{#if_instance_of parent_instance "Program"}}
-          <click-filter>
-            <a
-              href="javascript://"
-              rel="tooltip"
-              data-placement="left"
-              data-toggle="unified-mapper"
-              data-modal-selector-options="program_controls"
-              data-modal-class="modal-wide"
-              data-original-title="Map {{model.title_singular}} to this {{parent_instance.class.shortName}}"
-              data-join-object-id="{{parent_instance.id}}"
-              data-join-object-type="{{parent_instance.class.shortName}}">
-              + {{model.title_singular}}
-            </a>
-          </click-filter>
+          <a
+            href="javascript://"
+            rel="tooltip"
+            data-placement="left"
+            data-toggle="unified-mapper"
+            data-modal-selector-options="program_controls"
+            data-modal-class="modal-wide"
+            data-original-title="Map {{model.title_singular}} to this {{parent_instance.class.shortName}}"
+            data-join-object-id="{{parent_instance.id}}"
+            data-join-object-type="{{parent_instance.class.shortName}}">
+            + {{model.title_singular}}
+          </a>
         {{else}}
           {{#if_instance_of parent_instance 'Directive'}}
             <a href="javascript://" class="section-add">

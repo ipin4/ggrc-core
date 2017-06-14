@@ -12,7 +12,6 @@
               'Missing Scope Object';
   var OBJECT_REQUIRED_MESSAGE = 'Required Data for In Scope Object is missing' +
     ' - Original Object is mandatory';
-  var $body = $('body');
 
   can.Control.extend('GGRC.Controllers.MapperModal', {
     defaults: {
@@ -143,5 +142,11 @@
     }
   }
 
-  $body.on('click', selectors.join(', '), openMapper);
+  $('body').on('openMapper', function (el, ev, disableMapper) {
+    openMapper(ev, disableMapper);
+  });
+
+  $('body').on('click', selectors.join(', '), function (ev, disableMapper) {
+    openMapper(ev, disableMapper);
+  });
 })(window.can, window.can.$);

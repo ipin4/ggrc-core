@@ -8,20 +8,18 @@
   {{#if model.root_object}}
     {{^if_equals model.shortName 'Assessment'}}
     {{^if_equals model.shortName 'Issue'}}
-      <click-filter>
-        <a
-          class="btn btn-mini action-button map-button"
-          href="javascript://"
-          rel="tooltip"
-          data-placement="left"
-          data-toggle="unified-mapper"
-          data-join-option-type="{{model.shortName}}"
-          data-join-object-id="{{parent_instance.id}}"
-          data-join-object-type="{{parent_instance.class.shortName}}"
-          data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}">
-          Map
-        </a>
-      </click-filter>
+      <a
+        class="btn btn-mini action-button map-button"
+        href="javascript://"
+        rel="tooltip"
+        data-placement="left"
+        data-toggle="unified-mapper"
+        data-join-option-type="{{model.shortName}}"
+        data-join-object-id="{{parent_instance.id}}"
+        data-join-object-type="{{parent_instance.class.shortName}}"
+        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}">
+        Map
+      </a>
     {{/if_equals}}
     {{/if_equals}}
   {{#if null}}
@@ -42,36 +40,32 @@
   {{/if}}
   {{else}}
   {{#if_instance_of parent_instance "Section"}}
-    <click-filter>
-      <a
-        class="btn btn-mini action-button map-button"
-        href="javascript://"
-        rel="tooltip"
-        data-placement="left"
-        data-toggle="unified-mapper"
-        data-join-object-id="{{instance.id}}"
-        data-join-object-type="{{parent_instance.class.shortName}}"
-        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}"
-        data-object-params='{ "section": { "id": {{parent_instance.id}}, "title": "{{json_escape parent_instance.title}}", "description": "{{json_escape parent_instance.description}}" } }'
-    >
-        Map
-      </a>
-    </click-filter>
+  <a
+    class="btn btn-mini action-button map-button"
+    href="javascript://"
+    rel="tooltip"
+    data-placement="left"
+    data-toggle="unified-mapper"
+    data-join-object-id="{{instance.id}}"
+    data-join-object-type="{{parent_instance.class.shortName}}"
+    data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}"
+    data-object-params='{ "section": { "id": {{parent_instance.id}}, "title": "{{json_escape parent_instance.title}}", "description": "{{json_escape parent_instance.description}}" } }'
+>
+    Map
+  </a>
   {{else}}
-    <click-filter>
-      <a
-        class="btn btn-mini action-button map-button"
-        href="javascript://"
-        rel="tooltip"
-        data-placement="left"
-        data-toggle="unified-mapper"
-        data-join-object-id="{{instance.id}}"
-        data-join-object-type="{{parent_instance.class.shortName}}"
-        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}"
-    >
-        Map
-      </a>
-    </click-filter>
+  <a
+    class="btn btn-mini action-button map-button"
+    href="javascript://"
+    rel="tooltip"
+    data-placement="left"
+    data-toggle="unified-mapper"
+    data-join-object-id="{{instance.id}}"
+    data-join-object-type="{{parent_instance.class.shortName}}"
+    data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}"
+>
+    Map
+  </a>
   {{/if_instance_of}}
   {{/if}}
 {{/if}}

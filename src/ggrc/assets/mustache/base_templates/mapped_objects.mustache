@@ -15,41 +15,37 @@
 {{#if_equals instance.type 'CycleTaskGroupObjectTask'}}
   {{^if_in instance.status "Finished,Verified"}}
     {{#is_allowed 'update' instance context='for'}}
-      <click-filter>
-        <a
-          class="btn btn-white btn-small"
-          href="javascript://"
-          rel="tooltip"
-          data-type="Program"
-          data-placement="right"
-          data-toggle="unified-mapper"
-          data-join-mapping="related_objects"
-          data-join-option-type="{{model.shortName}}"
-          data-join-object-id="{{instance.id}}"
-          data-join-object-type="{{instance.class.shortName}}"
-          data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty instance.class.title_singular 'Object'}}">
-          Map Objects
-        </a>
-      </click-filter>
+      <a
+        class="btn btn-white btn-small"
+        href="javascript://"
+        rel="tooltip"
+        data-type="Program"
+        data-placement="right"
+        data-toggle="unified-mapper"
+        data-join-mapping="related_objects"
+        data-join-option-type="{{model.shortName}}"
+        data-join-object-id="{{instance.id}}"
+        data-join-object-type="{{instance.class.shortName}}"
+        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty instance.class.title_singular 'Object'}}">
+        Map Objects
+      </a>
     {{/is_allowed}}
   {{/if_in}}
 {{else}}
   {{#is_allowed 'update' instance context='for'}}
-  <click-filter>
-    <a
-      class="btn btn-white btn-small"
-      href="javascript://"
-      rel="tooltip"
-      data-type="Program"
-      data-placement="right"
-      data-toggle="unified-mapper"
-      data-join-mapping="related_objects"
-      data-join-option-type="{{model.shortName}}"
-      data-join-object-id="{{instance.id}}"
-      data-join-object-type="{{instance.class.shortName}}"
-      data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty instance.class.title_singular 'Object'}}">
-      Map Objects
-    </a>
-  </click-filter>
+  <a
+    class="btn btn-white btn-small"
+    href="javascript://"
+    rel="tooltip"
+    data-type="Program"
+    data-placement="right"
+    data-toggle="unified-mapper"
+    data-join-mapping="related_objects"
+    data-join-option-type="{{model.shortName}}"
+    data-join-object-id="{{instance.id}}"
+    data-join-object-type="{{instance.class.shortName}}"
+    data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty instance.class.title_singular 'Object'}}">
+    Map Objects
+  </a>
   {{/is_allowed}}
 {{/if_equals}}

@@ -25,27 +25,25 @@
  <!-- Add Map Object Here -->
  {{#with_page_object_as 'page_instance'}}
  <li class="ui-menu-item add-new" data-ui-autocomplete-item="">
-  <click-filter>
-    <a
-      data-object-plural="{{model.table_plural}}"
-      data-modal-class="modal-wide"
-      href="javascript://"
-      data-object-singular="{{model.model_singular}}"
+   <a
+     data-object-plural="{{model.table_plural}}"
+     data-modal-class="modal-wide"
+     href="javascript://"
+     data-object-singular="{{model.model_singular}}"
 
-      data-toggle="unified-mapper"
-      data-modal-reset="reset"
-      data-mapping="false"
-      rel="tooltip"
-      data-placement="left"
-      data-join-mapping="objects"
-      data-join-object-id="{{page_instance.id}}"
-      data-join-object-type="Workflow"
-      data-map-task-group="true"
+     data-toggle="unified-mapper"
+     data-modal-reset="reset"
+     data-mapping="false"
+     rel="tooltip"
+     data-placement="left"
+     data-join-mapping="objects"
+     data-join-object-id="{{page_instance.id}}"
+     data-join-object-type="Workflow"
+     data-map-task-group="true"
 
-      data-exclude-option-types=""
-      data-original-title="Map Object to this Workflow and TaskGroup">
-      + Map Objects
-    </a>
-  </click-filter>
+     data-exclude-option-types=""
+     data-original-title="Map Object to this Workflow and TaskGroup">
+     + Map Objects
+   </a>
  </li>
  {{/with_page_object_as}}

@@ -8,22 +8,20 @@
 <li class="tree-footer tree-item tree-item-add">
   <div class="row-fluid">
     <div class="span12 section-expandable">
-      <click-filter>
-        <a
-          class="section-add section-sticky"
-          href="javascript://"
-          rel="tooltip"
-          data-placement="left"
-          data-toggle="unified-mapper"
-          data-join-mapping="{{mapping}}"
-          data-join-object-id="{{parent_instance.id}}"
-          data-join-object-type="{{parent_instance.class.shortName}}"
-          data-exclude-option-types="{{exclude_option_types}}"
-          data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}"
-          >
-          Add Objects
-        </a>
-      </click-filter>
+      <a
+        class="section-add section-sticky"
+        href="javascript://"
+        rel="tooltip"
+        data-placement="left"
+        data-toggle="unified-mapper"
+        data-join-mapping="{{mapping}}"
+        data-join-object-id="{{parent_instance.id}}"
+        data-join-object-type="{{parent_instance.class.shortName}}"
+        data-exclude-option-types="{{exclude_option_types}}"
+        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}"
+        >
+        Add Objects
+      </a>
     </div>
   </div>
 </li>
