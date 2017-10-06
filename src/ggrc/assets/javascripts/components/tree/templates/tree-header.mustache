@@ -11,26 +11,40 @@
       <i class="fa fa-fw fa-bars"></i>
     </a>
     <div class="dropdown-menu dropdown-menu-form visible-columns-list">
-      <a class="pull-right close-dropdown"><i class="fa fa-times black"></i></a>
-      <h5>Set visible fields for {{modelName}}</h5>
-
-      <ul class="attr-list">
-        {{#availableColumns}}
-          <li class="{{#if mandatory}}disabled{{/if}}">
-            <label class="checkbox-inline" title="{{attr_title}}">
-              <input type="checkbox"
-                     {{#if display_status}}checked="checked"{{/if}}
-                     {{#if mandatory}}disabled{{/if}}
-                     ($change)="onChange"
-                     value="{{attr_name}}"
-                     class="notify-wrap attr-checkbox {{#if mandatory}}mandatory{{/if}}"
-              >
-              {{attr_title}}
-            </label>
+      <ul class="selected-attr">
+        {{#currentDisplayQueue}}
+          <li>
+            <div class="item-title">{{attr_title}}</div>
+            <div class="arrows">
+              <a><i class="fa fa-angle-down" data="down" ($mousedown)="moveItem(%event, %context, 'down')"></i></a>
+              <a><i class="fa fa-angle-up" data="up" ($mousedown)="moveItem(%event, %context, 'up')"></i></a>
+            </div>
           </li>
-        {{/availableColumns}}
+        {{/currentDisplayQueue}}
       </ul>
-      <a class="btn btn-small btn-lightBlue set-tree-attrs" href="javascript://" ($click)="setColumns">Set fields</a>
+      <div class="attr-container">
+        <a class="pull-right close-dropdown"><i class="fa fa-times black"></i></a>
+        <h5>Set visible fields for {{modelName}}</h5>
+
+        <ul class="attr-list">
+          {{#availableColumns}}
+            <li class="{{#if mandatory}}disabled{{/if}}">
+              <label class="checkbox-inline" title="{{attr_title}}">
+                <input type="checkbox"
+                      {{#if display_status}}checked="checked"{{/if}}
+                      {{#if mandatory}}disabled{{/if}}
+                      ($change)="onChange(%event, %context)"
+                      value="{{attr_name}}"
+                      class="notify-wrap attr-checkbox {{#if mandatory}}mandatory{{/if}}"
+                >
+                {{attr_title}}
+              </label>
+            </li>
+          {{/availableColumns}}
+        </ul>
+        <button class="btn btn-small btn-lightBlue set-tree-attrs" href="javascript://" ($click)="setColumns">Set fields</button>
+        <button class="btn btn-small btn-gray set-tree-attrs wide-close">Close</button>
+      </div>
     </div>
     {{/if}}
   </tree-header-selector>

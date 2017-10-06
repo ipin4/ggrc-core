@@ -101,41 +101,129 @@
         float: left;
         position: relative;
       }
-
+      .open  {
+        & > .dropdown-menu {
+          &.visible-columns-list {
+            display: flex;
+          }
+        }
+      }
       .visible-columns-list {
         @include border-radius(0);
         position: absolute;
         top: 23px;
         left: 5px;
-        padding: 14px 30px 20px 30px;
         min-width: 720px;
         max-width: 860px;
         text-align: left;
-        h5 {
-          font-size: 16px;
-          font-weight: normal;
-          text-transform: none;
-          line-height: 24px;
-        }
-        label {
-          font-size: 12px;
-        }
-        .attr-list {
-          margin-top: 11px;
-          margin-bottom: 14px;
-          li {
-            margin: 0;
-            text-transform: none;
-            label {
-              @extend %oneline;
-              display: inline-block;
-              cursor: pointer;
-            }
-            &.disabled {
-              color: $gray;
-              label {
-                cursor: not-allowed;
+        margin: 0;
+        padding: 0;
+        .selected-attr {
+          width: 30%;
+          display: inline-block;
+          text-transform: initial;
+          list-style: none;
+          margin: 0;
+          counter-reset: section;
+            li {
+              height: 39px;
+              line-height: 39px;
+              text-transform: none;
+              border-bottom: 1px solid $gray;
+              display: flex;
+              overflow: hidden;
+              .item-title {
+                text-overflow: ellipsis;
+                word-wrap: break-word;
+                word-break: break-all;
+                width: 67%;
               }
+              &:before {
+                box-sizing: border-box;
+                counter-increment: section;
+                content: counter(section);
+                color: $gray;
+                width: 13%;
+                padding-left: 10px
+              }
+              .arrows {
+                display: none;
+              }
+              &:hover {
+                .arrows {
+                  display: block;
+                  width: 52px;
+                  user-select: none;
+                  a {
+                    height: 16px;
+                    width: 16px;
+                    line-height: 16px;
+                    padding: 0;
+                    text-align: center;
+                    display: inline-block;
+                    border: 1px solid $gray;
+                    cursor: pointer;
+                    i {
+                      color: $gray;
+                    }
+                  }
+                }
+                &:nth-child(1) {
+                  .arrows {
+                    a:nth-child(2) {
+                      pointer-events: none;
+                    }
+                  }
+                }
+                &:nth-last-child(1) {
+                  .arrows {
+                    a:nth-child(1) {
+                      pointer-events: none;
+                    }
+                  }
+                }
+              }
+            }
+        }
+        .attr-container {
+          width: 70%;
+          padding: 14px 30px 20px 30px;
+          border-left: 1px solid $gray;
+          h5 {
+            font-size: 16px;
+            font-weight: normal;
+            text-transform: none;
+            line-height: 24px;
+          }
+          label {
+            font-size: 12px;
+          }
+          .attr-list {
+            margin-top: 11px;
+            margin-bottom: 14px;
+            max-height: 500px;
+            overflow: auto;
+            li {
+              margin: 0;
+              text-transform: none;
+              label {
+                @extend %oneline;
+                display: inline-block;
+                cursor: pointer;
+              }
+              &.disabled {
+                color: $gray;
+                label {
+                  cursor: not-allowed;
+                }
+              }
+            }
+          }
+          .set-tree-attrs {
+            float: right;
+            &.wide-close {
+              color: black;
+              margin-right: 10px;
             }
           }
         }
@@ -306,7 +394,6 @@
                 .btn {
                   display: inline-block;
                   text-transform: none;
-                  color: #fff;
                   font-weight: bold;
 
                   &.btn-small {
@@ -452,7 +539,7 @@ ul.model-list {
   }
   li {
     float: left;
-    width: 16.66%;
+    width: 25%;
     .attribute-wrap & {
       width: auto;
       margin-right: 15px;

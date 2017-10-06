@@ -123,7 +123,8 @@
       var savedAttrList = displayPrefs ?
         displayPrefs.getTreeViewHeaders(modelName) : [];
       var displayAttrNames =
-        savedAttrList.length ? savedAttrList :
+          savedAttrList.selectedNames ?
+          savedAttrList.selectedNames || savedAttrList :
           (Model.tree_view_options.display_attr_names ||
           Cacheable.tree_view_options.display_attr_names);
       var disableConfiguration =
@@ -221,7 +222,8 @@
 
       return {
         available: allAttrs,
-        selected: mandatoryColumns.concat(displayColumns),
+        selected: savedAttrList.selectedColumns ||
+                  mandatoryColumns.concat(displayColumns),
         mandatory: mandatoryAttrNames,
         disableConfiguration: false
       };
@@ -232,13 +234,15 @@
      * @param {String} modelType - Model type.
      * @param {Array} columnNames - Array of column names.
      * @param {Object} displayPrefs - Display preferences.
+     * @param {Array} selectedQueueColumns - Array of selected columns with display_queue
      * @return {Object} Table columns configuration.
      */
-    function setColumnsForModel(modelType, columnNames, displayPrefs) {
+    function setColumnsForModel(modelType, columnNames, displayPrefs, selectedQueueColumns) {
       var availableColumns =
         getColumnsForModel(modelType, displayPrefs, true).available;
-      var selectedColumns = [];
-      var selectedNames = [];
+        var selectedColumns = [];
+        var selectedNames = [];
+
 
       availableColumns.forEach(function (attr) {
         if (columnNames.indexOf(attr.attr_name) !== -1) {
@@ -255,14 +259,14 @@
       if (displayPrefs) {
         displayPrefs.setTreeViewHeaders(
           CMS.Models[modelType].model_singular,
-          selectedNames
+          {selectedNames, selectedColumns}
         );
         displayPrefs.save();
       }
 
       return {
         available: availableColumns,
-        selected: selectedColumns
+        selected: selectedColumns,
       };
     }
 

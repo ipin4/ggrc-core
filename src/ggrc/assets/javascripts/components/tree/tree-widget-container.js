@@ -295,14 +295,16 @@ import template from './templates/tree-widget-container.mustache';
       this.attr('columns.disableConfiguration', columns.disableConfiguration);
     },
     onUpdateColumns: function (event) {
+      var selectedNames = event.names;
       var selectedColumns = event.columns;
-      var columns = TreeViewUtils.setColumnsForModel(
+      TreeViewUtils.setColumnsForModel(
         this.attr('model').model_singular,
-        selectedColumns,
-        this.attr('displayPrefs')
+        selectedNames,
+        this.attr('displayPrefs'),
+        selectedColumns
       );
 
-      this.attr('columns.selected', columns.selected);
+      this.attr('columns.selected', selectedColumns);
     },
     onSort: function (event) {
       var field = event.field;
