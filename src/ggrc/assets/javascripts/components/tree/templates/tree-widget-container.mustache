@@ -51,30 +51,28 @@
           <span class="bubble"></span>
         </a>
         <ul class="dropdown-menu tree-action-list-items" role="menu">
-          {{^if_instance_of parent_instance 'Assessment'}}
-            {{^if isSnapshots}}
-              {{#is_allowed 'update' model.shortName context=parent_instance.context}}
-                <li>
-                  <a href="/import"
-                     target="_blank"
-                     class="section-import">
-                    <i class="fa fa-fw fa-cloud-upload"></i>
-                    Import {{model.model_plural}}
-                  </a>
-                </li>
-              {{/is_allowed}}
-            {{/if}}
-            {{#if showedItems.length}}
+          {{^if isSnapshots}}
+            {{#is_allowed 'update' model.shortName context=parent_instance.context}}
               <li>
-                <a href="/export?model_type={{model.model_singular}}&relevant_type={{parent_instance.type}}&relevant_id={{parent_instance.id}}{{#if isSnapshots}}&isSnapshots=true{{/if}}"
-                   target="_blank"
-                   class="section-import">
-                  <i class="fa fa-fw fa-download"></i>
-                  Export {{model.model_plural}}
+                <a href="/import"
+                    target="_blank"
+                    class="section-import">
+                  <i class="fa fa-fw fa-cloud-upload"></i>
+                  Import {{model.model_plural}}
                 </a>
               </li>
-            {{/if}}
-          {{/if_instance_of}}
+            {{/is_allowed}}
+          {{/if}}
+          {{#if showedItems.length}}
+            <li>
+              <a href="/export?model_type={{model.model_singular}}&relevant_type={{parent_instance.type}}&relevant_id={{parent_instance.id}}{{#if isSnapshots}}&isSnapshots=true{{/if}}"
+                  target="_blank"
+                  class="section-import">
+                <i class="fa fa-fw fa-download"></i>
+                Export {{model.model_plural}}
+              </a>
+            </li>
+          {{/if}}
           {{#if showGenerateAssessments}}
             <assessment-generator-button audit="parent_instance"></assessment-generator-button>
           {{/if}}
