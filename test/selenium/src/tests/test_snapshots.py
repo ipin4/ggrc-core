@@ -568,9 +568,8 @@ class TestSnapshots(base.Test):
        (["new_assessment_rest", "new_issue_rest"],
         ["map_new_assessment_rest_to_new_control_rest_snapshot",
          "map_new_assessment_rest_to_new_issue_rest"]),
-       pytest.mark.xfail(reason="Issue GGRC-1909", strict=True)(
-           ("new_assessment_rest",
-            "map_new_assessment_rest_to_new_control_rest_snapshot"))],
+       ("new_assessment_rest",
+        "map_new_assessment_rest_to_new_control_rest_snapshot")],
       ids=["Export of snapshoted Control from Audit's Info Page "
            "via mapped Controls' Tree View",
            "Export of snapshoted Control from Issue's Info Page "
