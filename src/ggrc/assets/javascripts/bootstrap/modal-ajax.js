@@ -509,6 +509,7 @@ import '../components/gca-controls/gca-controls';
       }).length < 1) {
       $el.on('keyup.preventdoubleescape', function (ev) {
         if (ev.which === 27 && $(ev.target).closest('.modal').length) {
+          $('body').trigger('closeMapper');
           $(ev.target).closest('.modal').attr('tabindex', -1).focus();
           ev.stopPropagation();
           if (ev.originalEvent) {
