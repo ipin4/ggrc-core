@@ -2,127 +2,248 @@
     Copyright (C) 2017 Google Inc.
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 }}
-
-{{#widget_list}}
-<li class="{{internav_icon}} {{widgetType}}">
-  {{#displayWidgetTab . instance}}
-
-  <a href="{{urlPath}}{{ selector }}" rel="tooltip" data-placement="bottom" title="{{ internav_display }}">
-    <div class="oneline">
-      <i class="fa fa-{{ internav_icon }} color"></i>
-      {{#if show_title}}
-        {{internav_display}}
-        {{#has_count}}({{firstnonempty count 0}}){{/has_count}}
-      {{else}}
-        {{#has_count}}{{firstnonempty count 0}}{{/has_count}}
-      {{/if}}
-      {{^count}}{{#has_count}}
-        {{^instance.constructor.obj_nav_options.show_all_tabs}}
-          {{^in_array internav_display instance.constructor.obj_nav_options.force_show_list}}
-            <span class="closed"><i class="fa fa-times"></i></span>
-          {{/in_array}}
-        {{/instance.constructor.obj_nav_options.show_all_tabs}}
-      {{/has_count}}{{/count}}
-    </div>
-  </a>
-  {{/displayWidgetTab}}
-</li>
-{{/widget_list}}
-
-
-{{#is_allowed 'update' instance}}
-{{#if widget_list.length}}
-{{^if instance.archived}}
-{{#isMenuVisible}}
-<li data-test-id="button_widget_add_2c925d94" class="hidden-widgets-list">
-  <a href="{{urlPath}}#dropdown-widgets" class="dropdown-toggle" data-toggle="dropdown" rel="tooltip" data-placement="bottom" title="{{addTabTitle}}"><i class="fa fa-plus-circle"></i> {{addTabTitle}}</a>
-  <div class="dropdown-menu" role="menu">
+{{#if counts.isInitialized}}
+<div class="tabs priority">
+  <ul class="internav {{#if_equals pageType 'Audit'}}audit{{/if_equals}}">
     {{#widget_list}}
-      <div class="inner-nav-item">
-        {{#isNotObjectVersion internav_display}}
-          {{#isNotProhibitedMap instance.type model.shortName }}
-          {{^if_helpers '\
-            #if' has_count '\
-            and #if' count '\
-            or ^if' has_count '\
-            or #if' force_show '\
-            or #if' instance.constructor.obj_nav_options.show_all_tabs '\
-            or #in_array' internav_display instance.constructor.obj_nav_options.force_show_list}}
-
-            {{#if_helpers '\
-              #if_instance_of' instance 'Program' '\
-              and #if_equals' model.shortName 'Audit'}}
-              <a
-                href="{{urlPath}}{{selector}}"
-                rel="tooltip"
-                data-placement="left"
-                data-original-title="Create {{model.title_singular}}"
-                data-toggle="modal-ajax-form"
-                data-modal-reset="reset"
-                data-no-href-load="true"
-                data-modal-class="modal-wide"
-                data-object-singular="{{model.title_singular}}"
-                data-object-plural="{{model.table_plural}}"
-                data-object-params='{
-                    "{{instance.class.table_singular}}": {
-                        "id": {{instance.id}},
-                        "title": "{{json_escape instance.title}}"
-                    },
-                    "context": {
-                        "id": {{firstnonempty instance.context.id "null"}},
-                        "href": "{{instance.context.href}}",
-                        "type": "{{instance.context.type}}"
-                    }
-                }'
-              >
-                <div class="oneline">
-                  <i class="fa fa-{{ internav_icon }} color"></i>
-                  {{internav_display}}
-                </div>
-              </a>
-            {{else}}
-              <a
-                href="{{urlPath}}{{ selector }}"
-                {{^is_dashboard_or_all}}
-                {{#is_mappable_type instance.type model.shortName}}
-                {{#is_allowed_to_map instance model.shortName}}
-                {{^if_equals model.shortName 'Assessment'}}
-                  data-clickable="true"
-                  data-toggle="unified-mapper"
-                  data-join-option-type="{{model.shortName}}"
-                  data-join-object-id="{{instance.id}}"
-                  data-join-object-type="{{instance.class.shortName}}"
-                {{/if_equals}}
-                {{/is_allowed_to_map}}
-                {{/is_mappable_type}}
-                {{/is_dashboard_or_all}}
-              >
-                <div class="oneline">
-                  <i class="fa fa-{{ internav_icon }} color"></i>
-                  {{internav_display}}
-                </div>
-              </a>
-            {{/if_helpers}}
-
-          {{/if_helpers}}
-          {{/isNotProhibitedMap}}
-        {{/isNotObjectVersion}}
-      </div>
-    {{/widget_list}}
-  </div>
-</li>
-{{/isMenuVisible}}
-{{/if}}
-{{/if}}
-{{/is_allowed}}
-
-{{{render_hooks 'ObjectNav.Actions'}}}
-
-{{#if dividedTabsMode}}
-  <li class="not-priority-hide {{#if isMenuVisible}}visible{{/if}}">
-      <i class="fa fa-angle-{{#if isMenuVisible}}right{{else}}left{{/if}}"></i>
-      {{^if isMenuVisible}}
-      <a href="javascript://">{{hideTabTitle}}</a>
+      {{#if show_title}}
+      <li class="{{internav_icon}} {{widgetType}} {{#if_equals contexts.active_widget.selector selector}}active{{/if_equals}}">
+        {{#displayWidgetTab . instance}}
+        <a href="{{urlPath}}{{ selector }}" rel="tooltip" data-placement="bottom" title="{{ internav_display }}">
+          <div class="oneline">
+            <i class="fa fa-{{ internav_icon }} color"></i>
+              {{internav_display}}
+              {{#has_count}}({{firstnonempty count 0}}){{/has_count}}
+            {{^count}}{{#has_count}}
+              {{^instance.constructor.obj_nav_options.show_all_tabs}}
+                {{^in_array internav_display instance.constructor.obj_nav_options.force_show_list}}
+                  <span class="closed"><i class="fa fa-times"></i></span>
+                {{/in_array}}
+              {{/instance.constructor.obj_nav_options.show_all_tabs}}
+            {{/has_count}}{{/count}}
+          </div>
+        </a>
+        {{/displayWidgetTab}}
+      </li>
       {{/if}}
-  </li>
+    {{/widget_list}}
+
+    {{^if_equals pageType 'Audit'}}
+      {{#is_allowed 'update' instance}}
+      {{#if widget_list.length}}
+      {{^if instance.archived}}
+      {{#isMenuVisible}}
+      <li data-test-id="button_widget_add_2c925d94" class="hidden-widgets-list">
+        {{#haveMoreWidgets}}
+        <a href="{{urlPath}}#dropdown-widgets" class="dropdown-toggle" data-toggle="dropdown" rel="tooltip" data-placement="bottom" title="{{addTabTitle}}"><i class="fa fa-plus-circle"></i> {{addTabTitle}}</a>
+        {{/haveMoreWidgets}}
+        <div class="dropdown-menu" role="menu">
+          {{#widget_list}}
+            <div class="inner-nav-item">
+              {{#isNotObjectVersion internav_display}}
+                {{#isNotProhibitedMap instance.type model.shortName }}
+                {{^if_helpers '\
+                  #if' has_count '\
+                  and #if' count '\
+                  or ^if' has_count '\
+                  or #if' force_show '\
+                  or #if' instance.constructor.obj_nav_options.show_all_tabs '\
+                  or #in_array' internav_display instance.constructor.obj_nav_options.force_show_list}}
+
+                  {{#if_helpers '\
+                    #if_instance_of' instance 'Program' '\
+                    and #if_equals' model.shortName 'Audit'}}
+                    <a
+                      href="{{urlPath}}{{selector}}"
+                      rel="tooltip"
+                      data-placement="left"
+                      data-original-title="Create {{model.title_singular}}"
+                      data-toggle="modal-ajax-form"
+                      data-modal-reset="reset"
+                      data-no-href-load="true"
+                      data-modal-class="modal-wide"
+                      data-object-singular="{{model.title_singular}}"
+                      data-object-plural="{{model.table_plural}}"
+                      data-object-params='{
+                          "{{instance.class.table_singular}}": {
+                              "id": {{instance.id}},
+                              "title": "{{json_escape instance.title}}"
+                          },
+                          "context": {
+                              "id": {{firstnonempty instance.context.id "null"}},
+                              "href": "{{instance.context.href}}",
+                              "type": "{{instance.context.type}}"
+                          }
+                      }'
+                    >
+                      <div class="oneline">
+                        <i class="fa fa-{{ internav_icon }} color"></i>
+                        {{internav_display}}
+                      </div>
+                    </a>
+                  {{else}}
+                    <a
+                      href="{{urlPath}}{{ selector }}"
+                      {{^is_dashboard_or_all}}
+                      {{#is_mappable_type instance.type model.shortName}}
+                      {{#is_allowed_to_map instance model.shortName}}
+                      {{^if_equals model.shortName 'Assessment'}}
+                        data-clickable="true"
+                        data-toggle="unified-mapper"
+                        data-join-option-type="{{model.shortName}}"
+                        data-join-object-id="{{instance.id}}"
+                        data-join-object-type="{{instance.class.shortName}}"
+                      {{/if_equals}}
+                      {{/is_allowed_to_map}}
+                      {{/is_mappable_type}}
+                      {{/is_dashboard_or_all}}
+                    >
+                      <div class="oneline">
+                        <i class="fa fa-{{ internav_icon }} color"></i>
+                        {{internav_display}}
+                      </div>
+                    </a>
+                  {{/if_helpers}}
+
+                {{/if_helpers}}
+                {{/isNotProhibitedMap}}
+              {{/isNotObjectVersion}}
+            </div>
+          {{/widget_list}}
+        </div>
+      </li>
+      {{/isMenuVisible}}
+      {{/if}}
+      {{/if}}
+      {{/is_allowed}}
+    {{/if_equals}}
+  </ul>
+</div>
+
+{{#if_equals pageType 'Audit'}}
+<div class="tabs not-priority">
+  {{{render_hooks 'ObjectNav.Actions'}}}
+
+  {{#if dividedTabsMode}}
+    <div class="not-priority-hide {{#if isMenuVisible}}visible{{/if}}">
+        <i class="fa fa-angle-{{#if isMenuVisible}}right{{else}}left{{/if}}"></i>
+        {{^if isMenuVisible}}
+        <a href="javascript://">{{hideTabTitle}}</a>
+        {{/if}}
+    </div>
+  {{/if}}
+
+  <ul class="internav">
+    {{#widget_list}}
+      {{^if show_title}}
+      <li class="{{internav_icon}} {{widgetType}} {{#if_equals contexts.active_widget.selector selector}}active{{/if_equals}}">
+        {{#displayWidgetTab . instance}}
+        <a href="{{urlPath}}{{ selector }}" rel="tooltip" data-placement="bottom" title="{{ internav_display }}">
+          <div class="oneline">
+            <i class="fa fa-{{ internav_icon }} color"></i>
+              {{#has_count}}{{firstnonempty count 0}}{{/has_count}}
+            {{^count}}{{#has_count}}
+              {{^instance.constructor.obj_nav_options.show_all_tabs}}
+                {{^in_array internav_display instance.constructor.obj_nav_options.force_show_list}}
+                  <span class="closed"><i class="fa fa-times"></i></span>
+                {{/in_array}}
+              {{/instance.constructor.obj_nav_options.show_all_tabs}}
+            {{/has_count}}{{/count}}
+          </div>
+        </a>
+        {{/displayWidgetTab}}
+      </li>
+      {{/if}}
+    {{/widget_list}}
+
+    {{#is_allowed 'update' instance}}
+    {{#if widget_list.length}}
+    {{^if instance.archived}}
+    {{#isMenuVisible}}
+    <li data-test-id="button_widget_add_2c925d94" class="hidden-widgets-list">
+      {{#haveMoreWidgets}}
+      <a href="{{urlPath}}#dropdown-widgets" class="dropdown-toggle" data-toggle="dropdown" rel="tooltip" data-placement="bottom" title="{{addTabTitle}}"><i class="fa fa-plus-circle"></i> {{addTabTitle}}</a>
+      {{/haveMoreWidgets}}
+      <div class="dropdown-menu" role="menu">
+        {{#widget_list}}
+          <div class="inner-nav-item">
+            {{#isNotObjectVersion internav_display}}
+              {{#isNotProhibitedMap instance.type model.shortName }}
+              {{^if_helpers '\
+                #if' has_count '\
+                and #if' count '\
+                or ^if' has_count '\
+                or #if' force_show '\
+                or #if' instance.constructor.obj_nav_options.show_all_tabs '\
+                or #in_array' internav_display instance.constructor.obj_nav_options.force_show_list}}
+
+                {{#if_helpers '\
+                  #if_instance_of' instance 'Program' '\
+                  and #if_equals' model.shortName 'Audit'}}
+                  <a
+                    href="{{urlPath}}{{selector}}"
+                    rel="tooltip"
+                    data-placement="left"
+                    data-original-title="Create {{model.title_singular}}"
+                    data-toggle="modal-ajax-form"
+                    data-modal-reset="reset"
+                    data-no-href-load="true"
+                    data-modal-class="modal-wide"
+                    data-object-singular="{{model.title_singular}}"
+                    data-object-plural="{{model.table_plural}}"
+                    data-object-params='{
+                        "{{instance.class.table_singular}}": {
+                            "id": {{instance.id}},
+                            "title": "{{json_escape instance.title}}"
+                        },
+                        "context": {
+                            "id": {{firstnonempty instance.context.id "null"}},
+                            "href": "{{instance.context.href}}",
+                            "type": "{{instance.context.type}}"
+                        }
+                    }'
+                  >
+                    <div class="oneline">
+                      <i class="fa fa-{{ internav_icon }} color"></i>
+                      {{internav_display}}
+                    </div>
+                  </a>
+                {{else}}
+                  <a
+                    href="{{urlPath}}{{ selector }}"
+                    {{^is_dashboard_or_all}}
+                    {{#is_mappable_type instance.type model.shortName}}
+                    {{#is_allowed_to_map instance model.shortName}}
+                    {{^if_equals model.shortName 'Assessment'}}
+                      data-clickable="true"
+                      data-toggle="unified-mapper"
+                      data-join-option-type="{{model.shortName}}"
+                      data-join-object-id="{{instance.id}}"
+                      data-join-object-type="{{instance.class.shortName}}"
+                    {{/if_equals}}
+                    {{/is_allowed_to_map}}
+                    {{/is_mappable_type}}
+                    {{/is_dashboard_or_all}}
+                  >
+                    <div class="oneline">
+                      <i class="fa fa-{{ internav_icon }} color"></i>
+                      {{internav_display}}
+                    </div>
+                  </a>
+                {{/if_helpers}}
+
+              {{/if_helpers}}
+              {{/isNotProhibitedMap}}
+            {{/isNotObjectVersion}}
+          </div>
+        {{/widget_list}}
+      </div>
+    </li>
+    {{/isMenuVisible}}
+    {{/if}}
+    {{/if}}
+    {{/is_allowed}}
+  </ul>
+</div>
+{{/if_equals}}
 {{/if}}

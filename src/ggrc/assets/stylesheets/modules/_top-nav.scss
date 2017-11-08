@@ -10,60 +10,78 @@
   background: $white;
 }
 
-ul.internav {
-  @extend %reset-list;
-  @extend %clearfix;
-  margin-left: 28px;
+.not-priority-hide {
   display: flex;
-  flex-flow: row wrap;
-  &.audit {
-    margin-right: 40px;
-    li {
-      &.access_group, &.clause, &.contract, &.control, &.data_asset, &.facility,
-      &.market, &.objective, &.org_group, &.policy, &.process, &.product,
-      &.regulation, &.section, &.standard, &.system, &.vendor, &.risk, &.threat {
-        a {
-          color: $blue;
-          opacity: 1;
-          &:hover {
-            color: $blue;
-          }
-          i {
-            color: $blue;
-          }
-        }
-      }
-      &:nth-child(4) {
-        margin-left: 0;
-        margin-right: auto;
-      }
-      &:nth-child(-n+4) {
-        order: 10;
-      }
-      &:nth-child(n+5) {
-        order: 20;
-      }
-      // dashboard tab
-      &.tachometer {
-        ~ li:nth-child(4) {
-          margin-right: 0;
-        }
+  align-items: center;
+  cursor: pointer;
+  &.visible {
+    border-left: 1px dotted;
+    border-right: 1px dotted;
+  }
+  i {
+    margin: auto 5px;
+  }
+}
 
-        ~ li:nth-child(5) {
+div.nav {
+  &.internav {
+    display: flex;
+    justify-content: space-between;
+    &.audit {
+      margin-right: 40px;
+      li {
+        &.access_group, &.clause, &.contract, &.control, &.data_asset, &.facility,
+        &.market, &.objective, &.org_group, &.policy, &.process, &.product,
+        &.regulation, &.section, &.standard, &.system, &.vendor, &.risk, &.threat {
+          a {
+            color: $blue;
+            opacity: 1;
+            &:hover {
+              color: $blue;
+            }
+            i {
+              color: $blue;
+            }
+          }
+        }
+        &:nth-child(4) {
           margin-left: 0;
-          margin-right: auto;
         }
-
-        ~ li:nth-child(n+5) {
+        &:nth-child(-n+4) {
           order: 10;
         }
-
-        ~ li:nth-child(n+6) {
+        &:nth-child(n+5) {
           order: 20;
+        }
+        // dashboard tab
+        &.tachometer {
+          ~ li:nth-child(4) {
+            margin-right: 0;
+          }
+
+          ~ li:nth-child(5) {
+            margin-left: 0;
+            margin-right: auto;
+          }
+
+          ~ li:nth-child(n+5) {
+            order: 10;
+          }
+
+          ~ li:nth-child(n+6) {
+            order: 20;
+          }
         }
       }
     }
   }
+
+}
+
+ul.internav {
+  @extend %reset-list;
+  @extend %clearfix;
+  margin-left: 28px;
   li {
     &.inner-nav-button {
       margin-left: auto;
@@ -103,19 +121,6 @@ ul.internav {
         &:hover {
           color: $black;
         }
-      }
-    }
-    &.not-priority-hide {
-      order: 15 !important;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      &.visible {
-        border-left: 1px dotted;
-        border-right: 1px dotted;
-      }
-      i {
-        margin: auto 5px;
       }
     }
     .dropdown-menu {
@@ -177,5 +182,29 @@ ul.internav {
   }
   i {
     margin-top: 6px;
+  }
+}
+
+.tabs {
+  &.priority {
+    ul.internav {
+      &.audit {
+        display: -webkit-inline-box;
+      }
+      display: flex;
+      flex-flow: row wrap;
+    }
+  }
+  &.not-priority {
+    display: flex;
+    ul.internav {
+      margin-left: 0;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: flex-end;
+      li {
+
+      }
+    }
   }
 }

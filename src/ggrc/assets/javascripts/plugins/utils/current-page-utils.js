@@ -23,7 +23,13 @@ var relatedToCurrentInstance = new can.Map({
   },
 });
 
-var widgetsCounts = new can.Map({});
+var widgetsCounts = new can.Map({
+  defined: {
+    isInitialized: {
+      value: false,
+    },
+  },
+});
 
 var QueryAPI = GGRC.Utils.QueryAPI;
 
@@ -181,8 +187,12 @@ function initWidgetCounts(widgets, type, id) {
     result = _initWidgetCounts(widgets, type, id);
   }
 
-  return result.then((counts) => {
-    getCounts().attr(counts);
+  return result.then((countsMap) => {
+    const counts = getCounts();
+    counts.attr(countsMap);
+    if (!counts.attr('isInitialized')) {
+      counts.attr('isInitialized', true);
+    }
   });
 }
 

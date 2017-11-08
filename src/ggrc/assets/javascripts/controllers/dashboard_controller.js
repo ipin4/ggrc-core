@@ -6,6 +6,7 @@
 import {
   isAdmin,
   getPageType,
+  getCounts,
 } from '../plugins/utils/current-page-utils';
 
 (function (can, $) {
@@ -273,6 +274,9 @@ import {
       hideTabTitle: 'Hide',
       dividedTabsMode: false,
       priorityTabs: null,
+      pageType: null,
+      counts: null,
+      haveMoreWidgets: true,
     },
   }, {
     init: function (options) {
@@ -283,7 +287,7 @@ import {
         if (!this.options.widget_list) {
           this.options.attr('widget_list', new can.Observe.List([]));
         }
-
+        this.options.attr('counts', getCounts());
         this.options.attr('instance', instance);
         if (!(this.options.contexts instanceof can.Observe)) {
           this.options.attr('contexts', new can.Observe(this.options.contexts));
@@ -294,10 +298,11 @@ import {
           this.route(window.location.hash);
         }.bind(this));
         can.view(this.options.internav_view, this.options, function (frag) {
-          const isAuditScope = instance.type === 'Audit';
+          this.options.attr('pageType', getPageType());
           const fn = function () {
+            const pageType = this.options.attr('pageType');
             this.element.append(frag);
-            if (isAuditScope) {
+            if (pageType == 'Audit') {
               const priorityTabsNum = 4 +
                 GGRC.Utils.Dashboards.isDashboardEnabled(instance);
               this.element.addClass(this.options.instance.type.toLowerCase());
@@ -305,6 +310,8 @@ import {
               this.options.attr('hideTabTitle', 'Show Audit Scope');
               this.options.attr('dividedTabsMode', true);
               this.options.attr('priorityTabs', priorityTabsNum);
+            } else if (isAdmin()) {
+              this.options.attr('counts.isInitialized', true);
             }
             this.route(window.location.hash);
             delete this.delayed_display;
@@ -346,7 +353,7 @@ import {
       var widgetList = this.options.widget_list;
 
       // Find and make active the widget specified by `step`
-      var widget = this.find_widget_by_target('#' + step);
+      var widget = this.widget_by_selector('#' + step);
       if (!widget && widgetList.length) {
         // Target was not found, but we can select the first widget in the list
         widget = widgetList[0];
@@ -397,25 +404,12 @@ import {
         dashboardCtr.show_widget_area();
         widget.siblings().addClass('hidden').trigger('widget_hidden');
         widget.removeClass('hidden').trigger('widget_shown');
-        this.element.find('li').removeClass('active');
-        $('[href$="' + panel + '"]').closest('li').addClass('active');
-      }
-    },
-
-    find_widget_by_target: function (target) {
-      var i;
-      var widget;
-      for (i = 0; i < this.options.widget_list.length; i++) {
-        widget = this.options.widget_list[i];
-        if (widget.selector === target) {
-          return widget;
-        }
       }
     },
 
     widget_by_selector: function (selector) {
-      return $.map(this.options.widget_list, function (widget) {
-        return widget.selector === selector ? widget : undefined;
+      return this.options.widget_list.filter((widget) => {
+        return widget.selector === selector;
       })[0] || undefined;
     },
 
@@ -574,12 +568,27 @@ import {
       }
     },
 
+    checkAddScope: function () {
+      let countsList = this.options.attr('widget_list');
+      let haveMoreWidgets = false;
+      if (this.options.attr('pageType') == 'Audit') {
+        countsList = this.options.attr('notPriorityTabs');
+      }
+      if (countsList) {
+        countsList.map((widget) => {
+          widget.count == 0 ? haveMoreWidgets = true : '';
+        });
+        this.options.attr('haveMoreWidgets', haveMoreWidgets);
+      }
+    },
+
     show_hide_titles: function () {
-      const pageType = getPageType();
-      const originalWidgets = this.options.widget_list;
+      const pageType = this.options.attr('pageType');
+      const originalWidgets = this.options.attr('widget_list');
       const priorityTabsNum = this.options.attr('priorityTabs');
       const priorityTabs = originalWidgets.slice(0, priorityTabsNum);
-      const notPriorityTabs = originalWidgets.slice(priorityTabsNum);
+      this.options.attr('notPriorityTabs',
+        originalWidgets.slice(priorityTabsNum));
 
       function hideTitles(widgets) {
         widgets.forEach(function (widget) {
@@ -595,7 +604,7 @@ import {
 
       if (pageType === 'Audit') {
         showTitles(priorityTabs);
-        hideTitles(notPriorityTabs);
+        hideTitles(this.options.attr('notPriorityTabs'));
       } else {
         showTitles(originalWidgets);
       }
@@ -632,16 +641,13 @@ import {
       }
     },
     '.not-priority-hide click': function (el) {
-      var count = this.options.attr('priorityTabs') + 1;
-      var hiddenAreaSelector = 'li:nth-child(n+' + count + '):not(:last-child)';
-      var $hiddenArea = this.element.find(hiddenAreaSelector);
-
+      var $hiddenArea = this.element
+        .find('div.tabs.not-priority > ul.internav');
       this.options.attr('isMenuVisible', !this.options.isMenuVisible);
-      if (this.options.isMenuVisible) {
-        $hiddenArea.show();
-      } else {
-        $hiddenArea.hide();
-      }
+      this.options.isMenuVisible ? $hiddenArea.show() : $hiddenArea.hide();
+    },
+    '{counts} change': function () {
+      this.checkAddScope();
     },
   });
 })(window.can, window.can.$);
