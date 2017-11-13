@@ -101,6 +101,7 @@ def chrome_options(chrome_options, create_tmp_dir):
   prefs = {"download.default_directory": create_tmp_dir,
            "download.prompt_for_download": False}
   chrome_options.add_experimental_option("prefs", prefs)
+  chrome_options.add_argument("--start-maximized")
   return chrome_options
 
 
