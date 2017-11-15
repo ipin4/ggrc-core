@@ -4,14 +4,15 @@
 */
 
 import * as AdvancedSearch from '../../../plugins/utils/advanced-search-utils';
+import AdvancedSearchContainer from '../../view-models/advanced-search-container-vm';
 
-describe('GGRC.VM.AdvancedSearchContainer', function () {
+describe('AdvancedSearchContainer', function () {
   'use strict';
 
   var viewModel;
 
   beforeEach(function () {
-    viewModel = new GGRC.VM.AdvancedSearchContainer();
+    viewModel = new AdvancedSearchContainer();
   });
 
   describe('removeItem() method', function () {

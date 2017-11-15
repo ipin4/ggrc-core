@@ -54,7 +54,10 @@ import template from './templates/tree-item-map.mustache';
           if (instance.attr('type') === 'Assessment') {
             el.data('type', instance.attr('assessment_type'));
           }
-          el.trigger('openMapper', ev);
+          import(/*webpackChunkName: "mapper"*/ '../../controllers/mapper/mapper')
+            .then(() => {
+              can.trigger(el, 'openMapper', ev);
+            });
         }
 
         viewModel.attr('disableLink', true);

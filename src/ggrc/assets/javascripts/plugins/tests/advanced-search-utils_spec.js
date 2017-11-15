@@ -24,12 +24,30 @@ describe('AdvancedSearch', function () {
         .toBe(expectedResult);
     });
 
+    it(`builds correct statuses with "ANY" operator for
+      CycleTaskGroupObjectTask`,
+      function () {
+        var items = [
+          AdvancedSearch.create.state({
+            items: ['Active', 'Draft', 'Deprecated'],
+            operator: 'ANY',
+            modelName: 'CycleTaskGroupObjectTask',
+          }),
+        ];
+        var expectedResult = '("Task State"="Active" ' +
+                             'OR "Task State"="Draft" ' +
+                             'OR "Task State"="Deprecated")';
+
+        expect(AdvancedSearch.buildFilter(items))
+          .toBe(expectedResult);
+      });
+
     it('builds correct statuses with "NONE" operator', function () {
       var items = [
         AdvancedSearch.create.state({
           items: ['Active', 'Draft', 'Deprecated'],
-          operator: 'NONE'
-        })
+          operator: 'NONE',
+        }),
       ];
       var expectedResult = '("Status"!="Active" ' +
                            'AND "Status"!="Draft" ' +
@@ -38,6 +56,24 @@ describe('AdvancedSearch', function () {
       expect(AdvancedSearch.buildFilter(items))
         .toBe(expectedResult);
     });
+
+    it(`builds correct statuses with "NONE" operator for
+      CycleTaskGroupObjectTask`,
+      function () {
+        var items = [
+          AdvancedSearch.create.state({
+            items: ['Active', 'Draft', 'Deprecated'],
+            operator: 'NONE',
+            modelName: 'CycleTaskGroupObjectTask',
+          }),
+        ];
+        var expectedResult = '("Task State"!="Active" ' +
+                             'AND "Task State"!="Draft" ' +
+                             'AND "Task State"!="Deprecated")';
+
+        expect(AdvancedSearch.buildFilter(items))
+          .toBe(expectedResult);
+      });
 
     it('builds correct filter string', function () {
       var items = [

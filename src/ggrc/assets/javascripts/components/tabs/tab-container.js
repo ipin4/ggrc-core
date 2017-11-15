@@ -3,6 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+import './tab-panel';
 import template from './tab-container.mustache';
 
 export default GGRC.Components('tabContainer', {

@@ -17,7 +17,7 @@
             <div class="span12">
               <div class="import-wrap import-analyze">
                 <h4>
-                  {{filename}}
+                  {{fileName}}
                   {{#if isLoading}}
                     <span {{attach_spinner '{ "radius": 4, "length": 4, "width": 2 }' 'display:inline-block; top: -3px; left: 30px;' }}></span>
                   {{/if}}
@@ -69,11 +69,15 @@
       {{/if_equals}}
 
       <div class="csv-input">
-        <input type="file" accept=".csv"
-               data-file-upload class="csv-upload" name="upload"
-               style="display:none" />
         {{#states}}
-          <button id="import_btn" {{#isDisabled}}disabled{{/isDisabled}} class="btn btn-small state-{{state}} {{class}}">{{{text}}}</button>
+          <button id="import_btn"
+             href="javascript://"
+             {{#isDisabled}}disabled{{/isDisabled}}
+             class="btn btn-small state-{{state}} {{class}}"
+             data-toggle="gdrive-picker"
+             data-type="documents">
+            {{{text}}}
+          </button>
           {{^if_equals state "select"}}
             {{#showSpinner}}
               <span {{attach_spinner '{ "radius": 4, "length": 4, "width": 2, "zIndex": 0}' 'display:inline-block; top: -3px; left: 30px;' }}></span>

@@ -3,6 +3,9 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+import '../../object-list-item/comment-list-item';
+import '../../object-list/object-list';
+
 (function (can, GGRC) {
   'use strict';
 

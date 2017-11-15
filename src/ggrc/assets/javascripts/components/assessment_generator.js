@@ -18,19 +18,22 @@
       'a click': function (el, ev) {
         var instance = this.scope.attr('audit') || GGRC.page_instance();
         this._results = null;
-        GGRC.Controllers.ObjectGenerator.launch(el, {
-          object: 'Audit',
-          type: 'Control',
-          'join-object-id': instance.id,
-          'join-mapping': 'program_controls',
-          relevantTo: [{
-            readOnly: true,
-            type: instance.type,
-            id: instance.id,
-            title: instance.title
-          }],
-          callback: this.generateAssessments.bind(this)
+        import(/*webpackChunkName: "mapper"*/ '../controllers/mapper/mapper').then(mapper => {
+          mapper.ObjectGenerator.launch(el, {
+            object: 'Audit',
+            type: 'Control',
+            'join-object-id': instance.id,
+            'join-mapping': 'program_controls',
+            relevantTo: [{
+              readOnly: true,
+              type: instance.type,
+              id: instance.id,
+              title: instance.title
+            }],
+            callback: this.generateAssessments.bind(this)
+          });
         });
+
       },
       showFlash: function (statuses) {
         var flash = {};

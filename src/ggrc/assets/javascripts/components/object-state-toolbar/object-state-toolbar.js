@@ -65,6 +65,9 @@
       isInReview: function () {
         return this.attr('instance.status') === 'In Review';
       },
+      hasPreviousState: function () {
+        return !!this.attr('instance.previousStatus');
+      },
       changeState: function (newState, isUndo) {
         if (this.attr('isDisabled')) {
           if (this.attr('instance.hasValidationErrors')) {

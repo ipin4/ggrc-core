@@ -4,6 +4,14 @@
  */
 
 import '../assessment_templates/assessment_templates';
+import '../../components/advanced-search/advanced-search-filter-container';
+import '../../components/advanced-search/advanced-search-filter-state';
+import '../../components/advanced-search/advanced-search-mapping-container';
+import '../../components/advanced-search/advanced-search-wrapper';
+import '../../components/collapsible-panel/collapsible-panel';
+import '../../components/unified-mapper/mapper-results';
+import '../../components/mapping-controls/mapping-type-selector';
+import ObjectOperationsBaseVM from '../view-models/object-operations-base-vm';
 
 (function (can, $) {
   'use strict';
@@ -17,7 +25,7 @@ import '../assessment_templates/assessment_templates';
     template: can.view(GGRC.mustache_path +
       '/components/object-generator/object-generator.mustache'),
     viewModel: function (attrs, parentViewModel) {
-      return GGRC.VM.ObjectOperationsBaseVM.extend({
+      return ObjectOperationsBaseVM.extend({
         object: attrs.object,
         join_object_id: attrs.joinObjectId,
         type: attrs.type,

@@ -6,6 +6,7 @@
 import * as TreeViewUtils from '../../../plugins/utils/tree-view-utils';
 import * as SnapshotUtils from '../../../plugins/utils/snapshot-utils';
 import * as AdvancedSearch from '../../../plugins/utils/advanced-search-utils';
+import Pagination from '../../base-objects/pagination';
 
 describe('GGRC.Components.mapperResults', function () {
   'use strict';
@@ -22,7 +23,7 @@ describe('GGRC.Components.mapperResults', function () {
     });
     viewModel.attr('submitCbs', $.Callbacks());
     viewModel.attr('paging',
-      new GGRC.VM.Pagination({pageSizeSelect: [5, 10, 15]}));
+      new Pagination({pageSizeSelect: [5, 10, 15]}));
     Component.prototype.viewModel.init = init;
     viewModel.init = init;
   });
@@ -314,8 +315,8 @@ describe('GGRC.Components.mapperResults', function () {
     var mockMappingItems = ['mappingItem'];
     var mockStatusItem = new can.Map({
       value: {
-        items: ['statusItem']
-      }
+        items: ['statusItem'],
+      },
     });
 
     beforeEach(function () {
@@ -427,6 +428,30 @@ describe('GGRC.Components.mapperResults', function () {
 
       expect(GGRC.query_parser.join_queries.calls.argsFor(2)[1])
         .toBe('unlocked');
+    });
+
+    it('prepare request for owned items if flag was set', function () {
+      var mockUser = {
+        id: -1,
+      };
+      var oldUser = GGRC.current_user;
+      GGRC.current_user = mockUser;
+      spyOn(GGRC.current_user, 'id').and.returnValue(-1);
+      viewModel.attr('applyOwnedFilter', true);
+
+      viewModel.getQuery();
+
+      expect(GGRC.query_parser.join_queries.calls.argsFor(2)[1]).toEqual({
+        expression: {
+          object_name: 'Person',
+          op: {
+            name: 'owned',
+          },
+          ids: [mockUser.id],
+        },
+      });
+
+      GGRC.current_user = oldUser;
     });
   });
 

@@ -211,45 +211,15 @@ describe('GGRC.Components.treeWidgetContainer', function () {
 
     it('sets current order properties', function () {
       onSort({
-        field: 'col1'
+        field: 'col1',
+        sortDirection: 'asc',
       });
 
       expect(vm.attr('sortingInfo.sortBy')).toEqual('col1');
-      expect(vm.attr('sortingInfo.sortDirection')).toEqual('desc');
-      expect(vm.attr('pageInfo.current')).toEqual(1);
-      expect(vm.loadItems).toHaveBeenCalled();
-      expect(vm.closeInfoPane).toHaveBeenCalled();
-    });
-
-    it('changes sortDirection for current column', function () {
-      vm.attr('sortingInfo', {
-        sortBy: 'field',
-        sortDirection: 'desc'
-      });
-      onSort({
-        field: 'field'
-      });
-
-      expect(vm.attr('sortingInfo.sortBy')).toEqual('field');
       expect(vm.attr('sortingInfo.sortDirection')).toEqual('asc');
       expect(vm.attr('pageInfo.current')).toEqual(1);
       expect(vm.loadItems).toHaveBeenCalled();
       expect(vm.closeInfoPane).toHaveBeenCalled();
-    });
-
-    it('changes sortBy property', function () {
-      vm.attr('sortingInfo', {
-        sortBy: 'field1',
-        sortDirection: 'asc'
-      });
-      onSort({
-        field: 'newField'
-      });
-
-      expect(vm.attr('sortingInfo.sortBy')).toEqual('newField');
-      expect(vm.attr('sortingInfo.sortDirection')).toEqual('desc');
-      expect(vm.attr('pageInfo.current')).toEqual(1);
-      expect(vm.loadItems).toHaveBeenCalled();
     });
   });
 

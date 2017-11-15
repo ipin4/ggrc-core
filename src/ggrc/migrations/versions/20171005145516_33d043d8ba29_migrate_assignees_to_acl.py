@@ -116,6 +116,22 @@ def upgrade():
       ["parent_id"], ["id"],
       ondelete="CASCADE"
   )
+  op.drop_constraint(
+      "access_control_list_ibfk_3",
+      "access_control_list",
+      "foreignkey"
+  )
+  op.drop_constraint("person_id", "access_control_list", "unique")
+  op.create_unique_constraint(
+      "person_id",
+      "access_control_list",
+      ["person_id", "ac_role_id", "object_id", "object_type", "parent_id"]
+  )
+  op.create_foreign_key(
+      "access_control_list_ibfk_3",
+      "access_control_list", "people",
+      ["person_id"], ["id"],
+  )
   op.add_column(
       "access_control_roles",
       sa.Column("internal", sa.Boolean(), nullable=False, server_default="0")
@@ -292,12 +308,13 @@ def upgrade():
       )
       SELECT tmo.person_id, acr.id, tmo.mapped_id, tmo.mapped_type,
           max(tmo.created_at), max(tmo.updated_at), max(tmo.context_id),
-          max(tmo.parent_id)
+          tmo.parent_id
       FROM temp_mapped_objects tmo
       JOIN access_control_roles acr ON
           acr.object_type = "Assessment" AND
           acr.name = tmo.role
-      GROUP BY tmo.person_id, acr.id, tmo.mapped_id, tmo.mapped_type;
+      GROUP BY tmo.person_id, acr.id, tmo.mapped_id, tmo.mapped_type,
+          tmo.parent_id;
   """)
   op.execute("""
       DROP TABLE IF EXISTS temp_assigned_objects;
@@ -359,3 +376,20 @@ def downgrade():
       SET name = 'assessment_assessor_reminder'
       WHERE name = 'assessment_assignees_reminder';
   """)
+
+  op.drop_constraint(
+      "access_control_list_ibfk_3",
+      "access_control_list",
+      "foreignkey"
+  )
+  op.drop_constraint("person_id", "access_control_list", "unique")
+  op.create_unique_constraint(
+      "person_id",
+      "access_control_list",
+      ["person_id", "ac_role_id", "object_id", "object_type"]
+  )
+  op.create_foreign_key(
+      "access_control_list_ibfk_3",
+      "access_control_list", "people",
+      ["person_id"], ["id"],
+  )

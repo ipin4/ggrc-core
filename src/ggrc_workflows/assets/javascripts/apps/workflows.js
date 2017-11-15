@@ -612,6 +612,8 @@ import {
   WorkflowExtension.init_widgets_for_person_page = function () {
     var descriptor = {};
     var pageInstance = GGRC.page_instance();
+    const isObjectBrowser = /^\/objectBrowser\/?$/
+      .test(window.location.pathname);
 
     descriptor[pageInstance.constructor.shortName] = {
       task: {
@@ -630,6 +632,7 @@ import {
           sort_property: null,
           sort_function: _taskSortFunction,
           draw_children: true,
+          showBulkUpdate: !isObjectBrowser,
           events: {
             'show-history': function (el, ev) {
               this.options.attr('mapping', el.attr('mapping'));
@@ -641,7 +644,7 @@ import {
     };
 
     // add 'Workflows' tab for 'All Objects' view
-    if (/^\/objectBrowser\/?$/.test(window.location.pathname)) {
+    if (isObjectBrowser) {
       descriptor[pageInstance.constructor.shortName].workflow = {
         widget_id: 'workflow',
         widget_name: 'Workflows',

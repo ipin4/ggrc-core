@@ -3,7 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import '../components/access_control_list/access_control_list_roles_helper'
+import '../components/access_control_list/access-control-list-roles-helper'
 
 (function (can, $) {
   can.Control('GGRC.Controllers.Modals', {
@@ -501,7 +501,8 @@ import '../components/access_control_list/access_control_list_roles_helper'
 
     serialize_form: function () {
       var $form = this.options.$content.find('form');
-      var $elements = $form.find(':input:not(isolate-form *)');
+      var $elements = $form
+        .find(':input:not(isolate-form *):not([data-no-serialization])');
 
       can.each($elements.toArray(), this.proxy('set_value_from_element'));
     },

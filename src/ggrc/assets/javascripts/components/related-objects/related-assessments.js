@@ -9,7 +9,7 @@ import './related-assessment-list';
 import './related-assessment-item';
 import './related-controls-objectives';
 import './related-evidences-and-urls';
-import './sortable-column';
+import '../sortable-column/sortable-column';
 import '../object-list/object-list';
 import '../object-list-item/business-object-list-item';
 import '../object-list-item/document-object-list-item';

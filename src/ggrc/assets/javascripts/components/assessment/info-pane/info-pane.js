@@ -17,6 +17,7 @@ import './create-url';
 import '../../object-change-state/object-change-state';
 import '../../related-objects/related-assessments';
 import '../../related-objects/related-issues';
+import '../../tabs/tab-container';
 import {
   getCustomAttributes,
   CUSTOM_ATTRIBUTE_TYPE,

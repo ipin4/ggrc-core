@@ -6,4 +6,3 @@ dashboard-js-template-files:
   - risks/modal_content.mustache
   - risks/info.mustache
   - threats/modal_content.mustache
-  - risk_objects/tree_footer.mustache

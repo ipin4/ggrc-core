@@ -414,33 +414,6 @@ ul.new-tree {
   }
 }
 
-.widget-col-title {
-  cursor: pointer;
-  i {
-    margin-top: 1px;
-  }
-  &.asc,
-  &.desc {
-    i {
-      display: inline-block;
-    }
-  }
-  &.asc {
-    i {
-      &:before {
-        content: $fa-var-caret-up;
-      }
-    }
-  }
-  &.desc {
-    i {
-      &:before {
-        content: $fa-var-caret-down;
-      }
-    }
-  }
-}
-
 ul.attr-list,
 ul.model-list {
   @extend %reset-list;

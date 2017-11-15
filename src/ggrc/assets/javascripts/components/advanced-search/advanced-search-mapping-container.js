@@ -6,6 +6,7 @@
 import './advanced-search-mapping-group';
 import './advanced-search-mapping-criteria';
 import './advanced-search-filter-operator';
+import AdvancedSearchContainer from '../view-models/advanced-search-container-vm';
 import * as AdvancedSearch from '../../plugins/utils/advanced-search-utils';
 
 (function (can, GGRC) {
@@ -19,7 +20,7 @@ import * as AdvancedSearch from '../../plugins/utils/advanced-search-utils';
    * Contains logic used in Mapping Container component
    * @constructor
    */
-  var viewModel = GGRC.VM.AdvancedSearchContainer.extend({
+  var viewModel = AdvancedSearchContainer.extend({
     /**
      * Contains specific model name.
      * @type {string}

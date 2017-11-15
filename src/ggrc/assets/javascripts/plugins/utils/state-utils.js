@@ -38,10 +38,22 @@ let statesModels = [
   },
   {
     models: [
-      'Person', 'CycleTaskGroupObjectTask', 'Workflow',
-      'TaskGroup', 'Cycle'
+      'Person', 'Workflow', 'TaskGroup', 'Cycle',
     ],
-    states: []
+    states: [],
+  },
+  {
+    models: [
+      'CycleTaskGroupObjectTask',
+    ],
+    states: [
+      'Assigned', 'InProgress', 'Finished',
+      'Declined', 'Deprecated', 'Verified',
+    ],
+    bulkStates: [
+      'InProgress', 'Finished',
+      'Declined', 'Deprecated', 'Verified',
+    ],
   },
   {
     models: ['Issue'],
@@ -108,6 +120,17 @@ function getStatesForModel(model) {
 }
 
 /**
+ * Get states for model that can be used
+ * as target in Bulk Update modal.
+ * @param {String} model - The model name
+ * @return {Array} array of strings
+ */
+function getBulkStatesForModel(model) {
+  var pair = getStatesModelsPair(model);
+  return pair && pair.bulkStates ? pair.bulkStates : [];
+}
+
+/**
  * Transform query for objects into query which filter them by state.
  * @param {Array} statuses - array of active statuses
  * @param {String} filterString - original query string
@@ -117,7 +140,7 @@ function getStatesForModel(model) {
 function statusFilter(statuses, filterString, modelName) {
   var filter = modelName === 'Assessment' ?
     buildAssessmentFilter(statuses, buildStatusesFilterString) :
-    buildStatusesFilterString(statuses);
+    buildStatusesFilterString(statuses, modelName);
 
   filterString = filterString || '';
   if (filter !== '') {
@@ -148,20 +171,37 @@ function unlockedFilter() {
 function buildStatusFilter(statuses, builder, modelName) {
   var filter = modelName === 'Assessment' ?
     buildAssessmentFilter(statuses, builder) :
-    builder(statuses);
+    builder(statuses, modelName);
   return filter;
 }
 
 /**
  * Build statuses filter string
  * @param {Array} statuses - array of active statuses
+ * @param {String} modelName - model name
  * @return {String} statuses filter
  */
-function buildStatusesFilterString(statuses) {
+function buildStatusesFilterString(statuses, modelName) {
+  var fieldName = getStatusFieldName(modelName);
+
   return statuses.map(function (item) {
     // wrap in quotes
-    return '"Status"="' + item + '"';
+    return '"' + fieldName + '"="' + item + '"';
   }).join(' Or ');
+}
+
+/**
+* Return status field name for model
+* @param {String} modelName - model name
+* @return {String} status field name
+*/
+function getStatusFieldName(modelName) {
+  var modelToStateFieldMap = {
+    CycleTaskGroupObjectTask: 'Task State',
+  };
+  var fieldName = modelToStateFieldMap[modelName] || 'Status';
+
+  return fieldName;
 }
 
 /**
@@ -181,7 +221,7 @@ function buildAssessmentFilter(statuses, builder) {
 
   // do not update statuses
   if (verifiedIndex === -1 && completedIndex === -1) {
-    return builder(statuses);
+    return builder(statuses, 'Assessment');
   }
 
   if (verifiedIndex > -1 && completedIndex > -1) {
@@ -193,7 +233,7 @@ function buildAssessmentFilter(statuses, builder) {
     // remove it
     statuses.splice(verifiedIndex, 1);
 
-    return builder(statuses);
+    return builder(statuses, 'Assessment');
   }
 
   if (completedIndex > -1 && verifiedIndex === -1) {
@@ -204,7 +244,7 @@ function buildAssessmentFilter(statuses, builder) {
     statuses.push('Completed');
   }
 
-  filter = builder(statuses);
+  filter = builder(statuses, 'Assessment');
   return filter + ' AND verified=' + isVerified;
 }
 
@@ -226,6 +266,8 @@ export {
   statusFilter,
   unlockedFilter,
   getStatesForModel,
+  getBulkStatesForModel,
   getDefaultStatesForModel,
-  buildStatusFilter
+  buildStatusFilter,
+  getStatusFieldName,
 };

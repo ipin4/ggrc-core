@@ -36,10 +36,14 @@
   </tree-header-selector>
   <div class="flex-box tree-header-titles">
     {{#selectedColumns}}
-      <div class="flex-box widget-col-title" ($click)="onOrderChange($element)" data-field="{{attr_sort_field}}">
-          <span>{{attr_title}}</span>
-          <i class="fa fa-{{#sortIcon attr_sort_field sortingInfo.sortBy sortingInfo.sortDirection}}{{/sortIcon}}"></i>
-      </div>
+      <sortable-column
+        class="tree-header-titles__item"
+        {(sort)}="orderBy"
+        sort-field="{{attr_sort_field}}">
+        <span class="tree-header-titles__text">
+          {{attr_title}}
+        </span>
+      </sortable-column>
     {{/selectedColumns}}
     </div>
 </header>

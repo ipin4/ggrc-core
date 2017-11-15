@@ -8,12 +8,15 @@ import Component from '../import';
 describe('GGRC.Components.csvImportWidget', function () {
   'use strict';
 
-  describe('scope.states() method', function () {
-    var method;  // the method under test
-    var fakeScope;
+  var method;  // the method under test
+  var fakeScope;
 
+  beforeEach(function () {
+    fakeScope = new can.Map({});
+  });
+
+  describe('scope.states() method', function () {
     beforeEach(function () {
-      fakeScope = new can.Map({});
       method = Component.prototype.scope.states.bind(fakeScope);
     });
 
@@ -145,5 +148,149 @@ describe('GGRC.Components.csvImportWidget', function () {
         );
       }
     );
+  });
+
+  describe('requestImport() method', function () {
+    var importDfd;
+
+    beforeEach(function () {
+      method = Component.prototype.scope.requestImport.bind(fakeScope);
+      importDfd = new can.Deferred();
+      spyOn(GGRC.Utils, 'import_request').and.returnValue(importDfd);
+      fakeScope.prepareDataForCheck = jasmine.createSpy();
+      fakeScope.beforeProcess = jasmine.createSpy();
+    });
+
+    it('sets "analyzing" value to "state" attribute', function () {
+      fakeScope.attr('state', null);
+      method({});
+      expect(fakeScope.attr('state')).toEqual('analyzing');
+    });
+
+    it('sets true to "isLoading" attribute', function () {
+      fakeScope.attr('isLoading', null);
+      method({});
+      expect(fakeScope.attr('isLoading')).toEqual(true);
+    });
+
+    it('sets file id to "fileId" attribute', function () {
+      fakeScope.attr('fileId', null);
+      method({id: '12343'});
+      expect(fakeScope.attr('fileId')).toEqual('12343');
+    });
+
+    it('sets file name to "fileName" attribute', function () {
+      fakeScope.attr('fileName', null);
+      method({name: 'import_objects'});
+      expect(fakeScope.attr('fileName')).toEqual('import_objects');
+    });
+
+    it('calls import_request method from utils with data containing file id' +
+    ' to check data for import', function () {
+      method({id: '12343'});
+      expect(GGRC.Utils.import_request).toHaveBeenCalledWith({
+        data: {id: '12343'},
+      }, true);
+    });
+
+    describe('after getting response', function () {
+      var checkObject;
+
+      beforeEach(function () {
+        fakeScope.element = 'element';
+        checkObject = {
+          check: 'check',
+          data: 'data',
+        };
+        fakeScope.prepareDataForCheck.and.returnValue(checkObject);
+      });
+
+      describe('in case of success', function () {
+        it('calls prepareDataForCheck method', function (done) {
+          var mockData = {data: 'data'};
+          importDfd.resolve(mockData);
+          method({});
+          expect(fakeScope.prepareDataForCheck).toHaveBeenCalledWith(mockData);
+          done();
+        });
+
+        it('calls beforeProcess method', function (done) {
+          importDfd.resolve();
+          method({});
+          expect(fakeScope.beforeProcess).toHaveBeenCalledWith(
+            checkObject.check, checkObject.data, fakeScope.element);
+          done();
+        });
+
+        it('sets false to isLoading attribute', function (done) {
+          importDfd.resolve();
+          method({});
+          expect(fakeScope.attr('isLoading')).toBe(false);
+          done();
+        });
+      });
+
+      describe('in case of fail', function () {
+        var failData;
+
+        beforeEach(function () {
+          failData = {
+            responseJSON: {message: 'message'},
+          };
+          spyOn(GGRC.Errors, 'notifier');
+        });
+
+        it('sets "select" value to state attribute', function (done) {
+          importDfd.reject(failData);
+          method({});
+          expect(fakeScope.attr('state')).toEqual('select');
+          done();
+        });
+
+        it('calls GGRC errors notifier with error message', function (done) {
+          importDfd.reject(failData);
+          method({});
+          expect(GGRC.Errors.notifier).toHaveBeenCalledWith('error',
+            failData.responseJSON.message);
+          done();
+        });
+
+        it('sets false to isLoading attribute', function (done) {
+          importDfd.reject(failData);
+          method({});
+          expect(fakeScope.attr('isLoading')).toBe(false);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('"#import_btn.state-select click" handler',
+  function () {
+    var authDfd;
+
+    beforeEach(function () {
+      method = Component.prototype
+        .events['#import_btn.state-select click'];
+      authDfd = new can.Deferred();
+      spyOn(GGRC.Controllers.GAPI, 'reAuthorize').and.returnValue(authDfd);
+      spyOn(gapi.auth, 'getToken').and.returnValue('mockToken');
+      spyOn(gapi, 'load');
+      spyOn(GGRC.Controllers.GAPI, 'oauth_dfd');
+    });
+
+    it('calls gdrive authorization', function () {
+      method();
+      expect(GGRC.Controllers.GAPI.reAuthorize)
+        .toHaveBeenCalledWith('mockToken');
+    });
+
+    it('loads gdrive picker after authorization', function () {
+      authDfd.resolve();
+
+      method();
+      expect(gapi.load).toHaveBeenCalledWith('picker',
+        {callback: jasmine.any(Function)});
+    });
   });
 });

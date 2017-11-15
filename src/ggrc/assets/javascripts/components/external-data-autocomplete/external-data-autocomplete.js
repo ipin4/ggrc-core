@@ -100,16 +100,10 @@ export default GGRC.Components('externalDataAutocomplete', {
     /**
      * Creates model in system and dispatches corresponding event.
      * @param {Object} item - an item picked by user.
-     * @return {can.Model} - corresponding system model.
      */
     onItemPicked(item) {
-      let type = this.attr('type');
-      let model = new CMS.Models[type](item);
-      model.attr('context', null);
-      model.attr('external', true);
-
       this.attr('saving', true);
-      model.save().then(()=> {
+      this.createOrGet(item).then((model)=> {
         if (this.attr('autoClean')) {
           this.attr('searchCriteria', '');
         }
@@ -121,8 +115,27 @@ export default GGRC.Components('externalDataAutocomplete', {
       }).always(()=> {
         this.attr('saving', false);
       });
+    },
+    /**
+     * Creates new model or returns existing from cache.
+     * @param {Object} item - model data.
+     * @return {can.promise} - promise indicates state of operation.
+     */
+    createOrGet(item) {
+      const type = this.attr('type');
+      const ModelClass = CMS.Models[type];
 
-      return model;
+      item.attr('context', null);
+      item.attr('external', true);
+
+      return ModelClass.create(item).then((response)=> {
+        let data = response[0];
+        let model = data[1][ModelClass.root_object];
+
+        let result = ModelClass.cache[model.id] || new ModelClass(model);
+
+        return result;
+      });
     },
   },
 });

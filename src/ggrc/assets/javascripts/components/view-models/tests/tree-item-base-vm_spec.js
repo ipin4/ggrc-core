@@ -5,6 +5,7 @@
 
 import * as TreeViewUtils from '../../../plugins/utils/tree-view-utils';
 import * as CurrentPageUtils from '../../../plugins/utils/current-page-utils';
+import BaseTreeItemVM from '../tree-item-base-vm';
 
 describe('GGRC.VM.BaseTreeItemVM', function () {
   'use strict';
@@ -12,7 +13,7 @@ describe('GGRC.VM.BaseTreeItemVM', function () {
   var vm;
 
   beforeEach(function () {
-    vm = new GGRC.VM.BaseTreeItemVM();
+    vm = new BaseTreeItemVM();
   });
 
   describe('initChildTreeDisplay() method', function () {

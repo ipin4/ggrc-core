@@ -3,6 +3,15 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+import '../../components/advanced-search/advanced-search-filter-container';
+import '../../components/advanced-search/advanced-search-filter-state';
+import '../../components/advanced-search/advanced-search-mapping-container';
+import '../../components/advanced-search/advanced-search-wrapper';
+import '../../components/unified-mapper/mapper-results';
+import '../../components/mapping-controls/mapping-type-selector';
+import '../../components/collapsible-panel/collapsible-panel';
+import ObjectOperationsBaseVM from '../view-models/object-operations-base-vm';
+
 (function (can, $) {
   'use strict';
 
@@ -11,7 +20,7 @@
     template: can.view(GGRC.mustache_path +
       '/components/object-search/object-search.mustache'),
     viewModel: function () {
-      return GGRC.VM.ObjectOperationsBaseVM.extend({
+      return ObjectOperationsBaseVM.extend({
         object: 'MultitypeSearch',
         type: 'Control',
         availableTypes: function () {

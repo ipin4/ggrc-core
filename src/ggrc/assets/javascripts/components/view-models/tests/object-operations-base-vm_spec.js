@@ -4,14 +4,15 @@
  */
 
 import * as SnapshotUtils from '../../../plugins/utils/snapshot-utils';
+import ObjectOperationsBaseVM from '../object-operations-base-vm';
 
-describe('GGRC.VM.ObjectOperationsBaseVM', function () {
+describe('ObjectOperationsBaseVM', function () {
   'use strict';
 
   var baseVM;
 
   beforeEach(function () {
-    baseVM = GGRC.VM.ObjectOperationsBaseVM();
+    baseVM = ObjectOperationsBaseVM();
   });
 
   describe('availableTypes() method', function () {
@@ -66,7 +67,7 @@ describe('GGRC.VM.ObjectOperationsBaseVM', function () {
         update: jasmine.createSpy('update'),
         prepareConfig: jasmine.createSpy('prepareConfig'),
       });
-      method = GGRC.VM.ObjectOperationsBaseVM
+      method = ObjectOperationsBaseVM
         .prototype
         .define
         .type
@@ -200,7 +201,7 @@ describe('GGRC.VM.ObjectOperationsBaseVM', function () {
     var config;
 
     beforeAll(function () {
-      method = GGRC.VM.ObjectOperationsBaseVM.extractConfig;
+      method = ObjectOperationsBaseVM.extractConfig;
     });
 
     beforeEach(function () {

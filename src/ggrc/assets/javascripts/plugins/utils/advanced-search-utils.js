@@ -72,22 +72,28 @@ var create = {
 var richOperators = {
   /**
    * @param {Array} values - filter statements.
+   * @param {String} modelName - model name
    * @return {string} - filter string.
    */
-  ANY: function (values) {
+  ANY: function (values, modelName) {
+    var statusField = StateUtils.getStatusFieldName(
+      modelName);
     return _.map(values, function (value) {
-      return '"Status"="' + value + '"';
+      return '"' + statusField + '"="' + value + '"';
     }).join(' OR ');
   },
   /**
    * @param {Array} values - filter statements.
+   * @param {String} modelName - model name
    * @return {string} - filter string.
    */
-  NONE: function (values) {
+  NONE: function (values, modelName) {
+    var statusField = StateUtils.getStatusFieldName(
+      modelName);
     return _.map(values, function (value) {
-      return '"Status"!="' + value + '"';
+      return '"' + statusField + '"!="' + value + '"';
     }).join(' AND ');
-  }
+  },
 };
 
 /**

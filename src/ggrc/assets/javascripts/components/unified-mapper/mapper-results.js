@@ -6,7 +6,10 @@ import './mapper-results-item';
 import './mapper-results-items-header';
 import './mapper-results-columns-configuration';
 import '../related-objects/related-assessments';
+import '../object-list/object-list';
 import '../object-selection/object-selection';
+import '../tree_pagination/tree_pagination';
+import '../simple-modal/simple-modal';
 import template from './templates/mapper-results.mustache';
 import * as StateUtils from '../../plugins/utils/state-utils';
 import * as TreeViewUtils from '../../plugins/utils/tree-view-utils';
@@ -15,6 +18,7 @@ import {
   toObject,
 } from '../../plugins/utils/snapshot-utils';
 import * as AdvancedSearch from '../../plugins/utils/advanced-search-utils';
+import Pagination from '../base-objects/pagination';
 
 const DEFAULT_PAGE_SIZE = 5;
 
@@ -25,7 +29,7 @@ export default GGRC.Components('mapperResults', {
     define: {
       paging: {
         value: function () {
-          return new GGRC.VM.Pagination({pageSizeSelect: [5, 10, 15]});
+          return new Pagination({pageSizeSelect: [5, 10, 15]});
         },
       },
     },
@@ -50,6 +54,7 @@ export default GGRC.Components('mapperResults', {
     submitCbs: null,
     displayPrefs: null,
     disableColumnsConfiguration: false,
+    applyOwnedFilter: false,
     objectsPlural: false,
     relatedAssessments: {
       state: {},
@@ -152,6 +157,18 @@ export default GGRC.Components('mapperResults', {
       var filterString = StateUtils.unlockedFilter();
       return GGRC.query_parser.parse(filterString);
     },
+    prepareOwnedFilter: function () {
+      var userId = GGRC.current_user.id;
+      return {
+        expression: {
+          object_name: 'Person',
+          op: {
+            name: 'owned',
+          },
+          ids: [userId],
+        },
+      };
+    },
     shouldApplyUnlockedFilter: function (modelName) {
       return modelName === 'Audit' && !this.attr('searchOnly');
     },
@@ -199,6 +216,12 @@ export default GGRC.Components('mapperResults', {
         advancedFilters = GGRC.query_parser.join_queries(
           advancedFilters,
           this.prepareUnlockedFilter());
+      }
+
+      if (this.attr('applyOwnedFilter')) {
+        advancedFilters = GGRC.query_parser.join_queries(
+          advancedFilters,
+          this.prepareOwnedFilter());
       }
 
       // prepare and add main query to request

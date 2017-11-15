@@ -9,24 +9,22 @@ including the import/export api endponts.
 
 from logging import getLogger
 
-import httplib2
-
-from apiclient import discovery
-from apiclient import http
+from apiclient.errors import HttpError
 
 from flask import current_app
 from flask import request
 from flask import json
 from flask import render_template
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import (
+    BadRequest, InternalServerError, Unauthorized
+)
 
 from ggrc import settings
-from ggrc_gdrive_integration import get_credentials
 from ggrc_gdrive_integration import verify_credentials
+from ggrc_gdrive_integration import file_actions as fa
 from ggrc.app import app
 from ggrc.converters.base import Converter
 from ggrc.converters.import_helper import generate_csv_string
-from ggrc.converters.import_helper import read_csv_file
 from ggrc.query.exceptions import BadQueryException
 from ggrc.query.builder import QueryHelper
 from ggrc.login import login_required
@@ -62,6 +60,7 @@ def parse_export_request():
 
 
 def handle_export_request():
+  """Export request handler"""
   try:
     with benchmark("handle export request"):
       data = parse_export_request()
@@ -77,25 +76,8 @@ def handle_export_request():
     with benchmark("Make response."):
       object_names = "_".join(converter.get_object_names())
       filename = "{}.csv".format(object_names)
-
       if export_to == "gdrive":
-        credentials = get_credentials()
-
-        http_auth = credentials.authorize(httplib2.Http())
-        drive_service = discovery.build('drive', 'v3', http=http_auth)
-
-        # make export to sheets
-        file_metadata = {
-            'name': filename,
-            'mimeType': 'application/vnd.google-apps.spreadsheet'
-        }
-        media = http.MediaInMemoryUpload(csv_string,
-                                         mimetype='text/csv',
-                                         resumable=True)
-        gfile = drive_service.files().create(
-            body=file_metadata,
-            media_body=media,
-            fields='id, name, parents').execute()
+        gfile = fa.create_gdrive_file(csv_string, filename)
         headers = [('Content-Type', 'application/json'), ]
         return current_app.make_response((json.dumps(gfile), 200, headers))
       if export_to == "csv":
@@ -107,9 +89,14 @@ def handle_export_request():
         return current_app.make_response((csv_string, 200, headers))
   except BadQueryException as exception:
     raise BadRequest(exception.message)
-  except:  # pylint: disable=bare-except
-    logger.exception("Export failed")
-  raise BadRequest("Export failed due to server error.")
+  except HttpError as e:
+    message = json.loads(e.content).get("error").get("message")
+    if e.resp.code == 401:
+      raise Unauthorized("{} Try to reload /export page".format(message))
+    raise InternalServerError(message)
+  except Exception as e:  # pylint: disable=broad-except
+    logger.exception("Export failed: %s", e.message)
+    raise InternalServerError("Export failed due to internal server error.")
 
 
 def check_import_file():
@@ -129,16 +116,19 @@ def parse_import_request():
       "X-test-only": ["true", "false"],
   }
   check_required_headers(required_headers)
-  csv_file = check_import_file()
-  csv_data = read_csv_file(csv_file)
-  dry_run = request.headers["X-test-only"] == "true"
-  return dry_run, csv_data
+  try:
+    file_data = request.json
+    dry_run = request.headers["X-test-only"] == "true"
+    return dry_run, file_data
+  except:  # pylint: disable=bare-except
+    raise BadRequest("Export failed due incorrect request data.")
 
 
 def handle_import_request():
   """Import request handler"""
+  dry_run, file_data = parse_import_request()
+  csv_data = fa.get_gdrive_file(file_data)
   try:
-    dry_run, csv_data = parse_import_request()
     converter = Converter(dry_run=dry_run, csv_data=csv_data)
     converter.import_csv()
     response_data = converter.get_info()
@@ -173,6 +163,10 @@ def init_converter_views():
   @login_required
   def import_view():
     """Get import view"""
+    if getattr(settings, "GAPI_CLIENT_ID", None):
+      authorize = verify_credentials()
+      if authorize:
+        return authorize
     return render_template("import_export/import.haml")
 
   @app.route("/export")

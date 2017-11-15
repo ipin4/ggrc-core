@@ -122,8 +122,6 @@ def csv_reader(csv_data, dialect=csv.excel, **kwargs):
 
 def read_csv_file(csv_file):
   """ Get full string representation of the csv file """
-  if isinstance(csv_file, basestring):  # noqa
-    csv_file = open(csv_file, 'rbU')
   return [row for row in csv_reader(csv_file)]
 
 

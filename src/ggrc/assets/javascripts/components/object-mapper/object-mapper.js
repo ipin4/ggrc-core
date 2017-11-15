@@ -3,6 +3,15 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+import '../../components/advanced-search/advanced-search-filter-container';
+import '../../components/advanced-search/advanced-search-filter-state';
+import '../../components/advanced-search/advanced-search-mapping-container';
+import '../../components/advanced-search/advanced-search-wrapper';
+import '../../components/unified-mapper/mapper-results';
+import '../../components/collapsible-panel/collapsible-panel';
+import '../../components/mapping-controls/mapping-type-selector';
+
+import ObjectOperationsBaseVM from '../view-models/object-operations-base-vm';
 import {
   isInScopeModel,
   isSnapshotModel,
@@ -68,12 +77,12 @@ import {
         special: parentViewModel.attr('special'),
       };
 
-      var resolvedConfig = GGRC.VM.ObjectOperationsBaseVM.extractConfig(
+      var resolvedConfig = ObjectOperationsBaseVM.extractConfig(
         config.general.type,
         config
       );
 
-      return GGRC.VM.ObjectOperationsBaseVM.extend({
+      return ObjectOperationsBaseVM.extend({
         join_object_id: resolvedConfig.isNew ? null :
           resolvedConfig['join-object-id'] ||
           (GGRC.page_instance() && GGRC.page_instance().id),

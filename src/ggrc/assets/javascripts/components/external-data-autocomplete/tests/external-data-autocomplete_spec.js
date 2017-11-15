@@ -114,20 +114,14 @@ describe('GGRC.Components.externalDataAutocomplete', ()=> {
     });
 
     describe('onItemPicked() method', ()=> {
-      let originalModels;
       let saveDfd;
       let item;
-      beforeAll(()=> originalModels = CMS.Models);
-      afterAll(()=> CMS.Models = originalModels);
       beforeEach(()=> {
         saveDfd = can.Deferred();
-        viewModel.attr('type', 'TestType');
-        CMS.Models.TestType = can.Model('TestType', {}, {
-          save: jasmine.createSpy().and.returnValue(saveDfd),
-        });
         item = {
           test: true,
         };
+        spyOn(viewModel, 'createOrGet').and.returnValue(saveDfd);
       });
 
       it('turns on "saving" flag', ()=> {
@@ -138,35 +132,21 @@ describe('GGRC.Components.externalDataAutocomplete', ()=> {
         expect(viewModel.attr('saving')).toBe(true);
       });
 
-      it('creates model based on type', ()=> {
-        let model = viewModel.onItemPicked(item);
+      it('call createOrGet() method', ()=> {
+        viewModel.onItemPicked(item);
 
-        expect(model instanceof CMS.Models.TestType).toBe(true);
-      });
-
-      it('creates model with empty context', ()=> {
-        let model = viewModel.onItemPicked(item);
-
-        expect(model.attr('test')).toBe(true);
-        expect(model.attr('context')).toBe(null);
-      });
-
-      it('creates model with "external" flag', ()=> {
-        let model = viewModel.onItemPicked(item);
-
-        expect(model.attr('test')).toBe(true);
-        expect(model.attr('external')).toBe(true);
+        expect(viewModel.createOrGet).toHaveBeenCalledWith(item);
       });
 
       it('dispatches event when istance was saved', ()=> {
         spyOn(viewModel, 'dispatch');
 
-        let model = viewModel.onItemPicked(item);
+        viewModel.onItemPicked(item);
 
-        saveDfd.resolve().then(()=> {
+        saveDfd.resolve(item).then(()=> {
           expect(viewModel.dispatch).toHaveBeenCalledWith({
             type: 'itemSelected',
-            selectedItem: model,
+            selectedItem: item,
           });
         });
       });
@@ -200,6 +180,82 @@ describe('GGRC.Components.externalDataAutocomplete', ()=> {
 
         saveDfd.resolve().then(()=> {
           expect(viewModel.attr('searchCriteria')).toBe('someText');
+        });
+      });
+    });
+
+    describe('createOrGet() method', ()=> {
+      let originalModels;
+      let createDfd;
+      let item;
+      let response;
+      let model;
+      beforeAll(()=> originalModels = CMS.Models);
+      afterAll(()=> CMS.Models = originalModels);
+
+      beforeEach(()=> {
+        createDfd = can.Deferred();
+        item = new can.Map({test: true});
+        viewModel.attr('type', 'TestType');
+        CMS.Models.TestType = can.Map.extend({
+          create: jasmine.createSpy().and.returnValue(createDfd),
+          root_object: 'test',
+          cache: {},
+        }, {});
+        model = {
+          id: 'testId',
+        };
+        response = [[201,
+          {
+            test: model,
+          },
+        ]];
+      });
+
+      it('make call to create model', ()=> {
+        viewModel.createOrGet(item);
+
+        expect(CMS.Models.TestType.create).toHaveBeenCalledWith(item);
+      });
+
+      it('creates model with empty context', ()=> {
+        item.attr('context', 'test');
+        viewModel.createOrGet(item);
+
+        let model = CMS.Models.TestType.create.calls.argsFor(0)[0];
+        expect(model.attr('context')).toBe(null);
+      });
+
+      it('creates model with "external" flag', ()=> {
+        item.attr('external', false);
+        viewModel.createOrGet(item);
+
+        let model = CMS.Models.TestType.create.calls.argsFor(0)[0];
+        expect(model.attr('external')).toBe(true);
+      });
+
+      it('returns new model if there is no value in cache', (done)=> {
+        let resultDfd = viewModel.createOrGet(item);
+
+        createDfd.resolve(response);
+
+        resultDfd.then((resultModel)=> {
+          expect(resultModel.attr('id')).toBe('testId');
+          expect(resultModel instanceof CMS.Models.TestType).toBe(true);
+          done();
+        });
+      });
+
+      it('returns cached model if there is value in cache', (done)=> {
+        CMS.Models.TestType.cache['testId'] = {cached: true};
+
+        let resultDfd = viewModel.createOrGet(item);
+
+        createDfd.resolve(response);
+
+        resultDfd.then((resultModel)=> {
+          expect(resultModel).toBe(CMS.Models.TestType.cache['testId']);
+          done();
         });
       });
     });

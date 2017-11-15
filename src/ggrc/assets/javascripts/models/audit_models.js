@@ -273,7 +273,25 @@
           return auditorsList;
         });
       });
-    }
+    },
+    form_preload() {
+      let dfd;
+      let contact = this.attr('contact');
+
+      if (contact && !contact.email) {
+        contact = contact.reify();
+
+        dfd = contact.email ?
+          can.Deferred().resolve(contact) :
+          contact.refresh();
+
+        dfd.then((refreshed)=> {
+          this.attr('contact.email', refreshed.email);
+        });
+      }
+
+      return dfd;
+    },
   });
 
   can.Model.Cacheable('CMS.Models.Meeting', {

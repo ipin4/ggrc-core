@@ -28,12 +28,6 @@ import '../../generated/ggrc_filter_query_parser';
 // Models
 import '../../models';
 
-// ViewModels
-import '../../components/view-models/advanced-search-container-vm';
-import '../../components/view-models/tree-item-base-vm';
-import '../../components/view-models/tree-people-base-vm';
-import '../../components/base-objects/pagination';
-
 // Controllers
 import '../../controllers/tree/tree-loader';
 import '../../controllers/tree/tree-view';
@@ -47,7 +41,6 @@ import '../../controllers/modals';
 import '../../controllers/info_pin_controller';
 import '../../controllers/automapper_controller';
 import '../../controllers/dashboard_controller';
-import '../../controllers/mapper';
 
 // Modules and Apps
 import '../../modules/widget_list';
@@ -67,28 +60,20 @@ import '../../components/comment/comment-input';
 import '../../components/comment/comment-add-button';
 import '../../components/object-list-item/business-object-list-item';
 import '../../components/object-list-item/person-list-item';
-import '../../components/object-list-item/comment-list-item';
 import '../../components/object-list-item/document-object-list-item';
-import '../../components/object-list-item/detailed-business-object-list-item';
 import '../../components/object-list-item/editable-document-object-list-item';
 import '../../components/object-list-item/object-list-item-updater';
 import '../../components/object-popover/object-popover';
-import '../../components/mapped-objects/directly-mapped-objects';
 import '../../components/mapped-objects/mapped-objects';
 import '../../components/object-state-toolbar/object-state-toolbar';
 import '../../components/object-list/object-list';
-import '../../components/ca-object/ca-object';
-import '../../components/form/form-validation-icon';
-import '../../components/ca-object/ca-object-value-mapper';
 import '../../components/ca-object/ca-object-modal-content';
 import '../../components/related-objects/related-objects';
 import '../../components/simple-modal/simple-modal';
 import '../../components/simple-popover/simple-popover';
 import '../../components/show-more/show-more';
 import '../../components/show-related-assessments-button/show-related-assessments-button';
-import '../../components/mapping-controls/mapping-type-selector';
 import '../../components/dropdown/dropdown';
-import '../../components/dropdown/multiselect-dropdown';
 import '../../components/autocomplete/autocomplete';
 import '../../components/datepicker/datepicker';
 import '../../components/person/person';
@@ -100,7 +85,6 @@ import '../../components/reusable_objects';
 import '../../components/assessment_generator';
 import '../../components/paginate';
 import '../../components/tabs/tab-container';
-import '../../components/tabs/tab-panel';
 import '../../components/assessment_attributes';
 import '../../components/lazy_open_close';
 import '../../components/revision-log/revision-log';

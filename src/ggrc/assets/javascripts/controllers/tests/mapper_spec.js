@@ -3,13 +3,13 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
-describe('GGRC.Controllers.ObjectMapper', function () {
-  'use strict';
-  var Ctrl;
+import {
+  ObjectMapper as Ctrl,
+  ObjectSearch,
+} from '../mapper/mapper';
 
-  beforeAll(function () {
-    Ctrl = GGRC.Controllers.ObjectMapper;
-  });
+describe('ObjectMapper', function () {
+  'use strict';
 
   describe('static openMapper method()', function () {
     var method;
@@ -155,14 +155,14 @@ describe('GGRC.Controllers.ObjectMapper', function () {
         fakeDataForCommon = _.extend({}, fakeData, {
           toggle: 'unified unified-search',
         });
-        spyOn(GGRC.Controllers.ObjectSearch, 'launch');
+        spyOn(ObjectSearch, 'launch');
       });
 
       it('sets config without relevantTo section if data.join_object_type ' +
       'is not in scope model', function () {
         var args;
         method(fakeDataForCommon, false, {});
-        args = GGRC.Controllers.ObjectSearch.launch.calls.argsFor(0);
+        args = ObjectSearch.launch.calls.argsFor(0);
 
         expect(args[1]).not.toEqual(jasmine.objectContaining({
           relevantTo: jasmine.any(Array),
@@ -174,7 +174,7 @@ describe('GGRC.Controllers.ObjectMapper', function () {
         var btn = {};
         method(fakeDataForCommon, false, btn);
 
-        expect(GGRC.Controllers.ObjectSearch.launch).toHaveBeenCalledWith(
+        expect(ObjectSearch.launch).toHaveBeenCalledWith(
           btn,
           jasmine.any(Object)
         );

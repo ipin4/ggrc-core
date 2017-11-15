@@ -137,4 +137,75 @@ describe('StateUtils', function () {
       expect(defaultStates[0]).toEqual('Active');
     });
   });
+
+  describe('getStatusFieldName() method', function () {
+    it('returns "Task State" for CycleTaskGroupObjectTask', function () {
+      var expected = 'Task State';
+
+      var actual = StateUtils.getStatusFieldName('CycleTaskGroupObjectTask');
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('returns "Status" when model is not provided', function () {
+      var expected = 'Status';
+
+      var actual = StateUtils.getStatusFieldName('');
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('returns "Status" for non-CycleTaskGroupObjectTask models',
+      function () {
+        var models = ['Standard', 'Regulation', 'Section', 'Objective',
+          'Control', 'Product', 'System', 'Process', 'AccessGroup',
+          'Assessment', 'Clause', 'Contract', 'DataAsset', 'Facility',
+          'Issue', 'Market', 'OrgGroup', 'Policy', 'Program', 'Project',
+          'Risk', 'Threat', 'Vendor', 'Audit', 'RiskAssessment', 'Workflow',
+          'AssessmentTemplate', 'Person', 'TaskGroup', 'TaskGroupTask',
+          'Cycle', 'CycleTaskGroup'];
+
+        _.forEach(models, function (model) {
+          expect(StateUtils.getStatusFieldName(model))
+            .toEqual('Status');
+        });
+      });
+  });
+
+  describe('getBulkStatesForModel() method', function () {
+    it('returns expected states for CycleTaskGroupObjectTask', function () {
+      var expected = ['InProgress', 'Finished',
+        'Declined', 'Deprecated', 'Verified'];
+
+      var actual = StateUtils
+        .getBulkStatesForModel('CycleTaskGroupObjectTask');
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('returns an empty array when model is not provided', function () {
+      var expected = [];
+
+      var actual = StateUtils.getBulkStatesForModel('');
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('returns an empty array for non-CycleTaskGroupObjectTask models',
+      function () {
+        var expected = [];
+        var models = ['Standard', 'Regulation', 'Section', 'Objective',
+          'Control', 'Product', 'System', 'Process', 'AccessGroup',
+          'Assessment', 'Clause', 'Contract', 'DataAsset', 'Facility',
+          'Issue', 'Market', 'OrgGroup', 'Policy', 'Program', 'Project',
+          'Risk', 'Threat', 'Vendor', 'Audit', 'RiskAssessment', 'Workflow',
+          'AssessmentTemplate', 'Person', 'TaskGroup', 'TaskGroupTask',
+          'Cycle', 'CycleTaskGroup'];
+
+        _.forEach(models, function (model) {
+          expect(StateUtils.getBulkStatesForModel(model))
+            .toEqual(expected);
+        });
+      });
+  });
 });

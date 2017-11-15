@@ -270,6 +270,8 @@
     update: 'PUT /api/cycle_task_group_object_tasks/{id}',
     destroy: 'DELETE /api/cycle_task_group_object_tasks/{id}',
     title_singular: 'Cycle Task',
+    name_singular: 'Task',
+    name_plural: 'Tasks',
     attributes: {
       cycle_task_group: 'CMS.Models.CycleTaskGroup.stub',
       task_group_task: 'CMS.Models.TaskGroupTask.stub',
@@ -337,9 +339,10 @@
           attr_sort_field: 'task last updated by'
         }
       ],
-      display_attr_names: ['title', 
-                           'Task Assignees', 
-                           'start_date', 
+      display_attr_names: ['title',
+                           'status',
+                           'Task Assignees',
+                           'start_date',
                            'end_date'],
       mandatory_attr_name: ['title'],
       draw_children: true

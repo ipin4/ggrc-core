@@ -4,6 +4,7 @@
 """Test Access Control List"""
 
 from ggrc import db
+from ggrc.access_control.role import get_custom_roles_for
 from ggrc.models import all_models
 from integration.ggrc import TestCase
 from integration.ggrc.models import factories
@@ -11,16 +12,8 @@ from integration.ggrc.api_helper import Api
 from integration.ggrc.generator import ObjectGenerator
 
 
-class TestAccessControlRBAC(TestCase):
-  """TestAccessControlRBAC tests if users get correct permissions on objects
-     from the access control table"""
-
-  def setUp(self):
-    super(TestAccessControlRBAC, self).setUp()
-    self.api = Api()
-    self.set_up_people()
-    self.set_up_acl_object()
-
+class TestRBAC(TestCase):
+  """TestRBAC base class with batch of helper methods"""
   def set_up_people(self):
     """Set up people with different roles needed by the tests"""
     self.people = {}
@@ -47,6 +40,17 @@ class TestAccessControlRBAC(TestCase):
           person=self.people.get(name)
       )
 
+
+class TestAccessControlRBAC(TestRBAC):
+  """TestAccessControlRBAC tests if users get correct permissions on objects
+     from the access control table"""
+
+  def setUp(self):
+    super(TestAccessControlRBAC, self).setUp()
+    self.api = Api()
+    self.set_up_people()
+    self.set_up_acl_object()
+
   def test_acl_object_cru(self):
     """Test if readers/creators can CRUD an object with all permissions"""
     control_id = self.control.id
@@ -66,3 +70,65 @@ class TestAccessControlRBAC(TestCase):
 
       assert acl[0].get("ac_role_id", None) == role_id, \
           "ACL list does not include role id {}".format(acl)
+
+
+class TestAssigneeRBAC(TestRBAC):
+  """TestAssigneeRBAC tests if users get correct permissions on objects
+  where he is has assignee role"""
+  def setUp(self):
+    super(TestAssigneeRBAC, self).setUp()
+    self.api = Api()
+    self.set_up_people()
+    self.assignee_roles = {
+        role_name: role_id
+        for role_id, role_name in get_custom_roles_for("Assessment").items()
+        if role_name in ["Assignees", "Creators", "Verifiers"]
+    }
+
+  def test_mapped_regulations_read(self):
+    """Test if creators can CRUD mapped Regulations and Objective snapshots."""
+    self.api.set_user(self.people.get("Editor"))
+    with factories.single_commit():
+      audit = factories.AuditFactory()
+      assessment = factories.AssessmentFactory(audit=audit)
+      factories.AccessControlListFactory(
+          ac_role_id=self.assignee_roles["Creators"],
+          person=self.people.get("Editor"),
+          object=assessment
+      )
+      factories.AccessControlListFactory(
+          ac_role_id=self.assignee_roles["Assignees"],
+          person=self.people.get("Creator"),
+          object=assessment
+      )
+      factories.RelationshipFactory(source=audit, destination=assessment)
+      control = factories.ControlFactory()
+      objective = factories.ObjectiveFactory()
+      regulation = factories.RegulationFactory()
+      snapshots = self._create_snapshots(
+          audit, [control, objective, regulation]
+      )
+      factories.RelationshipFactory(
+          source=snapshots[0], destination=snapshots[1]
+      )
+      factories.RelationshipFactory(
+          source=snapshots[2], destination=snapshots[0]
+      )
+      factories.RelationshipFactory(
+          source=assessment, destination=snapshots[0]
+      )
+
+    self.api.set_user(self.people.get("Creator"))
+    for snapshot in snapshots:
+      db.session.add(snapshot)
+      response = self.api.get(type(snapshot), snapshot.id)
+      self.assertEqual(
+          response.status_code, 200,
+          "Cannot GET mapped object. Received {}".format(response.status)
+      )
+      db.session.add(snapshot)
+      response = self.api.delete(snapshot)
+      self.assertEqual(
+          response.status_code, 403,
+          "Can DELETE mapped object. Received {}".format(response.status)
+      )

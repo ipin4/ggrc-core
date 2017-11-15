@@ -1,6 +1,8 @@
 # Copyright (C) 2017 Google Inc.
 # Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 
+"""Module for Relationship model and related classes."""
+
 import collections
 import sqlalchemy as sa
 from sqlalchemy import or_, and_
@@ -179,6 +181,9 @@ class Stub(collections.namedtuple("Stub", ["type", "id"])):
 
 
 class RelationshipsCache(object):
+  """Cache of related objects"""
+  # pylint: disable=too-few-public-methods
+
   def __init__(self):
     self.cache = collections.defaultdict(set)
 
@@ -192,7 +197,10 @@ class RelationshipsCache(object):
         Relationship.source_type, Relationship.source_id,
         Relationship.destination_type, Relationship.destination_id)
     relationships = cols.filter(
-        sa.tuple_(Relationship.source_type, Relationship.source_id).in_(
+        sa.tuple_(
+            Relationship.source_type,
+            Relationship.source_id
+        ).in_(
             [(s.type, s.id) for s in stubs]
         )
     ).union_all(

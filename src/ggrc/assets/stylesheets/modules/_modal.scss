@@ -678,6 +678,10 @@
     }
     .confirm-buttons {
       text-align: right;
+
+      &__objects-count {
+        margin-right: 20px;
+      }
     }
   }
   .actions {

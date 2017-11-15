@@ -7,6 +7,7 @@ import './advanced-search-filter-attribute';
 import './advanced-search-filter-group';
 import './advanced-search-filter-operator';
 import './advanced-search-filter-state';
+import AdvancedSearchContainer from '../view-models/advanced-search-container-vm';
 import * as StateUtils from '../../plugins/utils/state-utils';
 import * as AdvancedSearch from '../../plugins/utils/advanced-search-utils';
 
@@ -21,7 +22,7 @@ import * as AdvancedSearch from '../../plugins/utils/advanced-search-utils';
    * Contains logic used in Filter Container component
    * @constructor
    */
-  var viewModel = GGRC.VM.AdvancedSearchContainer.extend({
+  var viewModel = AdvancedSearchContainer.extend({
     define: {
       /**
        * Contains Filter Attributes, Groups and Operators.

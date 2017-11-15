@@ -4,35 +4,32 @@
  */
 
 import {ROLES_CONFLICT} from '../../events/eventTypes';
+import '../custom-roles/custom-roles-modal';
+import template from './templates/assessment-people.mustache';
 
-(function (can, GGRC) {
-  'use strict';
+const tag = 'assessment-people';
 
-  var tpl = can.view(GGRC.mustache_path +
-    '/components/assessment/assessment-people.mustache');
-  var tag = 'assessment-people';
-
-  can.Component.extend({
-    tag: tag,
-    template: tpl,
-    viewModel: {
-      define: {
-        emptyMessage: {
-          type: 'string',
-          value: '',
-        },
-      },
-      rolesConflict: false,
-      infoPaneMode: true,
-      withDetails: false,
-      instance: {},
-      conflictRoles: ['Assignees', 'Verifiers'],
-      orderOfRoles: ['Creators', 'Assignees', 'Verifiers'],
-    },
-    events: {
-      [`{instance} ${ROLES_CONFLICT.type}`]: function (ev, args) {
-        this.viewModel.attr('rolesConflict', args.rolesConflict);
+can.Component.extend({
+  tag,
+  template,
+  viewModel: {
+    define: {
+      emptyMessage: {
+        type: 'string',
+        value: '',
       },
     },
-  });
-})(window.can, window.GGRC);
+    rolesConflict: false,
+    infoPaneMode: true,
+    withDetails: false,
+    instance: {},
+    conflictRoles: ['Assignees', 'Verifiers'],
+    orderOfRoles: ['Creators', 'Assignees', 'Verifiers'],
+  },
+  events: {
+    [`{instance} ${ROLES_CONFLICT.type}`]: function (ev, args) {
+      this.viewModel.attr('rolesConflict', args.rolesConflict);
+    },
+  },
+});
+

@@ -5,6 +5,8 @@
 
 import Spinner from 'spin.js';
 
+var $body = $('body');
+
 // Initialize delegated event handlers
 jQuery(function ($) {
   window.natural_comparator = function (a, b) {
@@ -39,7 +41,7 @@ jQuery(function ($) {
   };
 
   // Turn the arrow when tree node content is shown
-  $('body').on('click', '[data-toggle="collapse"]', function (e) {
+  $body.on('click', '[data-toggle="collapse"]', function (e) {
     var $this = $(this);
     var $expander_container = $this.closest(':has(.expander, .enddot)');
     var $expander = $expander_container.find('.expander').eq(0);
@@ -56,7 +58,7 @@ jQuery(function ($) {
 
   // After the modal template has loaded from the server, but before the
   //  data has loaded to populate into the body, show a spinner
-  $('body').on('loaded', '.modal.modal-slim, .modal.modal-wide', function (e) {
+  $body.on('loaded', '.modal.modal-slim, .modal.modal-wide', function (e) {
     var spin = function () {
       $(this).html(
         $(new Spinner().spin().el)
@@ -73,12 +75,12 @@ jQuery(function ($) {
     $(e.target).find('.modal-body .source').each(spin);
   });
 
-  $('body').on('click', '[data-toggle="list-remove"]', function (e) {
+  $body.on('click', '[data-toggle="list-remove"]', function (e) {
     e.preventDefault();
     $(this).closest('li').remove();
   });
 
-  $('body').on('click', '[data-toggle="list-select"]', function (e) {
+  $body.on('click', '[data-toggle="list-select"]', function (e) {
     var $this;
     var $li;
     var target;
@@ -96,7 +98,7 @@ jQuery(function ($) {
     }
   });
 
-  $('body').on('click', '[data-toggle="nested-dropdown"]', function (e) {
+  $body.on('click', '[data-toggle="nested-dropdown"]', function (e) {
     var $parent = $(this).parent();
     var isActive = $parent.hasClass('open');
     if (!isActive) {
@@ -138,7 +140,7 @@ jQuery(function ($) {
       var headers;
       var i;
       if (task.status == 'Pending' || task.status == 'Running') {
-        $('body').trigger(
+        $body.trigger(
           'ajax:flash',
             {progress: msg + ' ' + task.status.toLowerCase() + '...'}
         );
@@ -173,10 +175,10 @@ jQuery(function ($) {
         if (msg === 'Upload and Review') {
           // Don't display "Upload and Review successful." message;
           // But kill progress message.
-          $('body').trigger('ajax:flash', {});
+          $body.trigger('ajax:flash', {});
           return;
         }
-        $('body').trigger(
+        $body.trigger(
           'ajax:flash',
             {success: msg + ' successful.'}
         );
@@ -184,7 +186,7 @@ jQuery(function ($) {
         if ($btn) {
           $btn.removeClass('disabled');
         }
-        $('body').trigger(
+        $body.trigger(
           'ajax:flash',
             {error: msg + ' failed.'}
         );
@@ -196,7 +198,7 @@ jQuery(function ($) {
   $(submit_import).ready(function () {
     $(submit_import).addClass('disabled');
   });
-  $('body').on('ajax:success', 'form.import', function (e, data, status, xhr) {
+  $body.on('ajax:success', 'form.import', function (e, data, status, xhr) {
     var $btn = $('form.import .btn.disabled').first();
     var result;
     if (xhr.getResponseHeader('Content-Type') == 'application/json') {
@@ -224,7 +226,7 @@ jQuery(function ($) {
   });
 
   jQuery(function ($) {
-    $('body').on('ajax:success', 'form[data-remote][data-update-target]', function (e, data, status, xhr) {
+    $body.on('ajax:success', 'form[data-remote][data-update-target]', function (e, data, status, xhr) {
       var $container;
       if (xhr.getResponseHeader('Content-Type') == 'text/html') {
         $container = $($(this).data('update-target'));
@@ -240,11 +242,11 @@ jQuery(function ($) {
     setTimeout(can.proxy(window.location.reload, window.location), 10);
   }
 
-  $('body').on('ajax:complete', '[data-ajax-complete="refresh"]', refresh_page);
+  $body.on('ajax:complete', '[data-ajax-complete="refresh"]', refresh_page);
 });
 
 jQuery(function ($) {
-  $('body').on('ajax:success', '#helpedit form', function (e, data, status, xhr) {
+  $body.on('ajax:success', '#helpedit form', function (e, data, status, xhr) {
     var $modal = $(this).closest('.modal');
     $modal.find('.modal-header h1').html(data.help.title);
     $modal.find('.modal-body .help-content').html(data.help.content);
@@ -254,7 +256,7 @@ jQuery(function ($) {
 
 jQuery(function ($) {
   // Used in object_list sidebars (References, People, Categories)
-  $('body').on('modal:success', '.js-list-container-title a', function (e, data) {
+  $body.on('modal:success', '.js-list-container-title a', function (e, data) {
     var $this = $(this);
     var $title = $this.closest('.js-list-container-title');
     var $span = $title.find('span');
@@ -293,17 +295,17 @@ jQuery(function ($) {
   }
   function updateNotifications() {
     CMS.Models.NotificationConfig.findActive().then(checkActive);
-    $('body').off('click', '.user-dropdown > .dropdown-toggle', updateNotifications);
+    $body.off('click', '.user-dropdown > .dropdown-toggle', updateNotifications);
   }
 
-  $('body').on('click', '.user-dropdown > .dropdown-toggle', updateNotifications);
+  $body.on('click', '.user-dropdown > .dropdown-toggle', updateNotifications);
 
   // Don't close the dropdown if clicked on checkbox
-  $('body').on('click', '.notify-wrap', function (ev) {
+  $body.on('click', '.notify-wrap', function (ev) {
     ev.stopPropagation();
   });
 
-  $('body').on('click', 'input[name=notifications]', function (ev, el) {
+  $body.on('click', 'input[name=notifications]', function (ev, el) {
     var li = $(ev.target).closest('.notify-wrap');
     var inputs = li.find('input');
     var active = [];
@@ -333,7 +335,7 @@ jQuery(function ($) {
     });
   });
 
-  $('body').on('click', '.clear-display-settings', function (e) {
+  $body.on('click', '.clear-display-settings', function (e) {
     CMS.Models.DisplayPrefs.findAll().done(function (data) {
       var destroys = [];
       can.each(data, function (d) {
@@ -354,7 +356,7 @@ jQuery(function ($) {
         destroys.push(d.setPageAsDefault(page_token));
       });
       $.when.apply($, destroys).done(function () {
-        $('body').trigger(
+        $body.trigger(
           'ajax:flash',
           {success: 'Saved page layout as default for ' + (page_token === 'dashboard' ? 'dashboard' : page_token)}
         );
@@ -365,7 +367,7 @@ jQuery(function ($) {
 
 // Make all external links open in new window.
 jQuery(function ($) {
-  $('body').on('click', 'a[href]:not([target])', function (e) {
+  $body.on('click', 'a[href]:not([target])', function (e) {
     if (!e.isDefaultPrevented()) {
       if (/^http/.test(this.protocol) && this.hostname !== window.location.hostname) {
         e.preventDefault();
@@ -510,12 +512,12 @@ jQuery(function ($) {
   }
 
   // Footer expander animations (verify that an expander exists)
-  $('body').on('mouseenter', '.section-add:has(+ .section-expander), .section-expander:visible:animated', function (e) {
+  $body.on('mouseenter', '.section-add:has(+ .section-expander), .section-expander:visible:animated', function (e) {
     var $this = $(this);
     expander($this.hasClass('section-add') ? $this : $this.prev('.section-add'), 'out');
   });
 
-  $('body').on('click', '.show-long', function (e) {
+  $body.on('click', '.show-long', function (e) {
     var $this = $(this);
     var $descField = $this.closest('.span12').find('.tree-description');
     $this.hide();
@@ -523,16 +525,46 @@ jQuery(function ($) {
   });
 
   // show/hide audit lead and firm
-  $('body').on('mouseover', '.ui-autocomplete li a', function (e) {
+  $body.on('mouseover', '.ui-autocomplete li a', function (e) {
     var $this = $(this);
     $this.addClass('active');
     $this.closest('li').addClass('active');
   });
-  $('body').on('mouseleave', '.ui-autocomplete li a', function (e) {
+  $body.on('mouseleave', '.ui-autocomplete li a', function (e) {
     var $this = $(this);
     $this.removeClass('active');
     $this.closest('li').removeClass('active');
   });
+});
+
+function openMapperByElement(ev, disableMapper) {
+  var btn = $(ev.currentTarget);
+  var data = {};
+
+  can.each(btn.data(), function (val, key) {
+    data[can.camelCaseToUnderscore(key)] = val;
+  });
+
+  if (data.tooltip) {
+    data.tooltip.hide();
+  }
+
+  if (!data.clickable) {
+    ev.preventDefault();
+  }
+
+  import(/*webpackChunkName: "mapper"*/ './controllers/mapper/mapper').then(mapper => {
+    mapper.ObjectMapper.openMapper(data, disableMapper, btn);
+  });
+}
+
+$body.on('openMapper', (el, ev, disableMapper) => {
+  openMapperByElement(ev, disableMapper);
+});
+
+$body.on('click', ['unified-mapper', 'unified-search']
+  .map(val => '[data-toggle="' + val + '"]').join(', '), (ev, disable) => {
+  openMapperByElement(ev, disable);
 });
 
 jQuery(window).on('load', resize_areas);

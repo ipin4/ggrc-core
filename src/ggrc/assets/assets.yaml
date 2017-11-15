@@ -16,7 +16,6 @@ dashboard-js-template-files:
   - components/assessment/mapped-objects/mapped-control-related-objects.mustache
   - components/assessment/mapped-objects/mapped-controls.mustache
   - components/assessment/mapped-objects/mapped-related-information.mustache
-  - components/assessment/assessment-people.mustache
   - components/assessment/mapped-objects/mapped-comments.mustache
   - components/assessment/custom-attributes.mustache
   - components/gca-controls/gca-controls.mustache
@@ -30,7 +29,6 @@ dashboard-js-template-files:
   - components/object-list-item/comment-list-item.mustache
   - components/object-list-item/person-list-item.mustache
   - components/object-list-item/document-object-list-item.mustache
-  - components/mapped-objects/directly-mapped-objects.mustache
   - components/mapped-objects/mapped-objects.mustache
   - components/related-objects/related-issues.mustache
   - components/reusable-objects/reusable-objects-item.mustache
@@ -70,47 +68,28 @@ dashboard-js-template-files:
   - base_objects/title.mustache
   - base_objects/tree-item-attr.mustache
   - base_objects/tree_placeholder.mustache
-  - base_objects/tree_footer_no_access.mustache
-  - base_objects/tree_footer_zero.mustache
-  - base_objects/tree_column_selector.mustache
-  - base_objects/tree_column_selector_3bbs.mustache
-  - base_objects/tree_column_selector_body.mustache
-  - base_objects/tree_column_names.mustache
-  - base_objects/sub_tree_expand.mustache
-  - base_objects/sub_tree_all_related_link.mustache
   - base_objects/generate_assessments_button.mustache
   - base_objects/form_restore.mustache
   - base_objects/info-pane-utility.mustache
-  - base_objects/info_header.mustache
-  - base_objects/modal_contact_fields.mustache
   - base_objects/modal_content_urls.mustache
   - base_objects/open_close.mustache
-  - base_objects/sub_tree_type_selector.mustache
   - base_objects/mapper-item-description.mustache
   - base_objects/dashboard_widget.mustache
-  - base_templates/objects_tooltip.mustache
   - base_templates/attachment.mustache
-  - base_templates/base.mustache
   - base_templates/dates_list.mustache
   - base_templates/description.mustache
-  - base_templates/header.mustache
   - base_templates/mapped_objects.mustache
   - base_templates/notes.mustache
-  - base_templates/request_type.mustache
-  - base_templates/test.mustache
   - base_templates/urls.mustache
   - base_templates/mapping_tree_view.mustache
   - assessments/assignable_extended_info.mustache
-  - mixins/assignable.mustache
   - clauses/modal_content.mustache
   - contracts/modal_content.mustache
   - controls/categories_tree.mustache
   - controls/info.mustache
   - controls/contacts.mustache
   - controls/urls.mustache
-  - controls/list_popover.mustache
   - controls/modal_content.mustache
-  - controls/object_list.mustache
   - controls/tree-item-attr.mustache
   - assessments/modal_content.mustache
   - assessments/modal_content_additional_fields.mustache
@@ -128,6 +107,9 @@ dashboard-js-template-files:
   - issues/remediation_plan.mustache
   - issues/tree_add_item.mustache
   - components/autocomplete/autocomplete.mustache
+  - components/bulk-update-button/bulk-update-button.mustache
+  - components/object-bulk-update/object-bulk-update.mustache
+  - components/object-bulk-update/bulk-update-target-state.mustache
   - components/object-mapper/object-mapper.mustache
   - components/object-generator/object-generator.mustache
   - components/object-search/object-search.mustache
@@ -189,7 +171,6 @@ dashboard-js-template-files:
   - documents/active_column.mustache
   - dashboard/lhn.mustache
   - dashboard/lhn_search.mustache
-  - documents/list.mustache
   - documents/modal_content.mustache
   - documents/option_column.mustache
   - documents/option_detail.mustache
@@ -220,11 +201,7 @@ dashboard-js-template-files:
   - modals/save_cancel_buttons.mustache
   - modals/save_cancel_delete_buttons.mustache
   - modals/unmap_cancel_buttons.mustache
-  - modals/mapper/object-mapper-modal.mustache
-  - modals/mapper/object-generator-modal.mustache
-  - modals/mapper/object-search-modal.mustache
   - objectives/info.mustache
-  - objectives/list_popover.mustache
   - objectives/modal_content.mustache
   - objectives/tree-item-attr.mustache
   - org_groups/modal_content.mustache
@@ -235,7 +212,6 @@ dashboard-js-template-files:
   - people/dropdown_menu.mustache
   - people/filters.mustache
   - people/info.mustache
-  - people/list.mustache
   - people/modal_content.mustache
   - people/object_list.mustache
   - people/option_column.mustache
@@ -268,7 +244,6 @@ dashboard-js-template-files:
   - standards/modal_content.mustache
   - systems/info.mustache
   - systems/modal_content.mustache
-  - base_objects/tree_footer.mustache
   - base_objects/tree_add_item.mustache
   - audits/modal_content.mustache
   - audits/tree-item-attr.mustache

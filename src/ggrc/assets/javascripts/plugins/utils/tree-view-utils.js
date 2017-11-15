@@ -16,6 +16,7 @@ import {
   initMappedInstances,
   isObjectContextPage,
   getPageType,
+  isMyWork,
 } from './current-page-utils';
 import './query-api-utils';
 
@@ -739,7 +740,7 @@ function _createInstance(source, modelName) {
 }
 
 function _getTreeViewOperation(objectName) {
-  var isDashboard = /dashboard/.test(window.location);
+  var isDashboard = isMyWork();
   var operation;
   if (isDashboard) {
     operation = 'owned';

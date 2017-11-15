@@ -4,6 +4,13 @@
  */
 
 import '../related-objects/related-comments';
+import '../object-list-item/comment-list-item';
+import './object-popover';
+import '../form/form-validation-icon';
+import '../tabs/tab-container';
+import '../show-more/show-more';
+import '../related-objects/related-comments';
+
 import {convertValuesToFormFields} from '../../plugins/utils/ca-utils';
 
 (function (can) {

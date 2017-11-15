@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from ggrc import login, db
 from ggrc.access_control.role import get_custom_roles_for
 from ggrc.models.mixins.assignable import Assignable
-from ggrc.models.relationship import Stub, RelationshipsCache
+from ggrc.models.relationship import Stub
 from ggrc.services import signals
 from ggrc.models import all_models
 from ggrc.models.comment import Commentable
@@ -283,11 +283,76 @@ def related(base_objects, rel_cache):
   return {o: rel_cache.cache[o] for o in base_objects if o in rel_cache.cache}
 
 
+def related_regulation_snaps(snapshot_ids):
+  """Collect all snapshots of Objective and Regulations mapped to
+  snapshot of Control
+
+  Args:
+    snapshot_ids(list): Ids of snapshots of controls.
+
+  Returns:
+    Query with ids of control snapshot and mapped one.
+  """
+  related_snapshots = sa.union_all(
+      db.session.query(
+          all_models.Relationship.destination_id.label("base_snap_id"),
+          all_models.Relationship.source_id.label("rel_snap_id"),
+          all_models.Snapshot.child_type.label("child_type")
+      ).join(
+          all_models.Snapshot,
+          sa.and_(
+              all_models.Relationship.source_id == all_models.Snapshot.id,
+              all_models.Relationship.source_type == "Snapshot",
+              all_models.Relationship.destination_type == "Snapshot",
+          )
+      ),
+      db.session.query(
+          all_models.Relationship.source_id,
+          all_models.Relationship.destination_id,
+          all_models.Snapshot.child_type
+      ).join(
+          all_models.Snapshot,
+          sa.and_(
+              all_models.Relationship.destination_id == all_models.Snapshot.id,
+              all_models.Relationship.source_type == "Snapshot",
+              all_models.Relationship.destination_type == "Snapshot",
+          )
+      )
+  ).alias("related_snapshots")
+
+  return db.session.query(
+      related_snapshots.c.base_snap_id,
+      related_snapshots.c.rel_snap_id,
+  ).join(
+      all_models.Snapshot,
+      related_snapshots.c.base_snap_id == all_models.Snapshot.id,
+  ).filter(
+      all_models.Snapshot.child_type == "Control",
+      related_snapshots.c.base_snap_id.in_(snapshot_ids),
+      related_snapshots.c.child_type.in_(["Objective", "Regulation"]),
+  )
+
+
+def add_related_snapshots(snapshot_ids, related_objects):
+  """Get Stubs of Objective and Regulations snapshots mapped to
+  snapshot of Control
+
+  Args:
+    snapshot_ids(dict): Ids of control snapshots with Stub of assigned object.
+    related_objects(dict): Dict of base assigned objects with Stubs of related.
+  """
+  related_regulations = related_regulation_snaps(snapshot_ids.keys())
+  for base_snap, related_snap in related_regulations:
+    rel_snap_stub = Stub("Snapshot", related_snap)
+    related_objects[snapshot_ids[base_snap]].add(rel_snap_stub)
+
+
 def handle_relationship_creation(session, flush_context):
   """Create relations for mapped objects."""
   # pylint: disable=unused-argument
   base_objects = defaultdict(set)
   related_objects = defaultdict(set)
+  snapshot_ids = {}
   for obj in session.new:
     if isinstance(obj, all_models.Relationship) and (
         issubclass(type(obj.source), Assignable) or
@@ -305,7 +370,13 @@ def handle_relationship_creation(session, flush_context):
           base_objects[assign_stub].add(acl)
           related_objects[assign_stub].add(other_stub)
 
-  create_related_roles(base_objects, related_objects)
+          if other.type == "Snapshot":
+            snapshot_ids[other.id] = assign_stub
+
+  if base_objects:
+    if snapshot_ids:
+      add_related_snapshots(snapshot_ids, related_objects)
+    create_related_roles(base_objects, related_objects)
 
 
 def get_mapped_role(object_type, acr_name, mapped_obj_type):
@@ -328,21 +399,18 @@ def get_mapped_role(object_type, acr_name, mapped_obj_type):
   return obj_roles.get("{}{} Mapped".format(acr_name, doc_part))
 
 
-def create_related_roles(base_objects, related_objects=None):
+def create_related_roles(base_objects, related_objects):
   """Create mapped roles for related objects
 
   Args:
     base_objects(defaultdict(dict)): Objects which have Assignee role
     related_objects(defaultdict(set)): Objects related to assigned
   """
-  if not base_objects:
+  if not base_objects or not related_objects:
     return
 
-  if not related_objects:
-    related_objects = related(base_objects.keys(), RelationshipsCache())
-
   acl_row = namedtuple(
-      "acl_row", "person_id object_id object_type ac_role_id"
+      "acl_row", "person_id object_id object_type ac_role_id parent_id"
   )
   acl_parent = namedtuple("acl_parent", "context parent")
   acl_data = {}
@@ -365,6 +433,7 @@ def create_related_roles(base_objects, related_objects=None):
             related_stub.id,
             related_stub.type,
             mapped_acr_id,
+            acl.id,
         )] = acl_parent(acl.context, acl)
 
   # Find existing acl instances in db
@@ -372,33 +441,52 @@ def create_related_roles(base_objects, related_objects=None):
       all_models.AccessControlList.person_id,
       all_models.AccessControlList.object_id,
       all_models.AccessControlList.object_type,
-      all_models.AccessControlList.ac_role_id
+      all_models.AccessControlList.ac_role_id,
+      all_models.AccessControlList.parent_id,
   ).filter(
       sa.tuple_(
           all_models.AccessControlList.person_id,
           all_models.AccessControlList.object_id,
           all_models.AccessControlList.object_type,
-          all_models.AccessControlList.ac_role_id
+          all_models.AccessControlList.ac_role_id,
+          all_models.AccessControlList.parent_id,
       ).in_(acl_data.keys())
   ).all())
   # Find existing acl instances in session
-  existing_acls.update({
-      (a.person_id, a.object_id, a.object_type, a.ac_role_id)
+  session_acls = {
+      (
+          a.person_id,
+          a.object_id,
+          a.object_type,
+          a.ac_role_id,
+          a.parent.id if a.parent else a.parent_id,
+      ):
+      (a.person_id, a.object_id, a.object_type, a.ac_role_id, a.parent)
       for a in db.session.new if isinstance(a, all_models.AccessControlList)
-  })
+  }
+  existing_acls.update(session_acls.keys())
 
   current_user_id = login.get_current_user_id()
   # Create new acl instance only if it absent in db and session
   for acl in set(acl_data.keys()) - existing_acls:
-    db.session.add(all_models.AccessControlList(
-        person_id=acl.person_id,
-        ac_role_id=acl.ac_role_id,
-        object_id=acl.object_id,
-        object_type=acl.object_type,
-        context=acl_data[acl].context,
-        modified_by_id=current_user_id,
-        parent=acl_data[acl].parent,
-    ))
+    # In some cases parent_id will be None, but parent object is not empty.
+    # that's why we should additionally compare parent objects
+    if (
+        acl.person_id,
+        acl.object_id,
+        acl.object_type,
+        acl.ac_role_id,
+        acl_data[acl].parent
+    ) not in session_acls.values():
+      db.session.add(all_models.AccessControlList(
+          person_id=acl.person_id,
+          ac_role_id=acl.ac_role_id,
+          object_id=acl.object_id,
+          object_type=acl.object_type,
+          context=acl_data[acl].context,
+          modified_by_id=current_user_id,
+          parent=acl_data[acl].parent,
+      ))
 
 
 def handle_relationship_delete(relationship):
@@ -410,7 +498,9 @@ def handle_relationship_delete(relationship):
       assign_obj, other = other, assign_obj
     parent_ids = {acl.id for acl in assign_obj.access_control_list}
     db.session.query(all_models.AccessControlList).filter(
-        all_models.AccessControlList.parent_id.in_(parent_ids)
+        all_models.AccessControlList.parent_id.in_(parent_ids),
+        all_models.AccessControlList.object_type == other.type,
+        all_models.AccessControlList.object_id == other.id,
     ).delete(synchronize_session='fetch')
 
 

@@ -181,7 +181,7 @@ tree-item {
 
     .flex-box.selectable-attrs {
       flex-wrap: wrap;
-      min-width: 0; 
+      min-width: 0;
     }
 
     .attr-cell {
@@ -213,6 +213,12 @@ tree-item {
           }
         }
 
+      }
+    }
+
+    cycle-task-actions {
+      .item-actions.disabled {
+        @include disabled();
       }
     }
   }
@@ -357,6 +363,24 @@ tree-header {
 
     .tree-header-titles {
       width: calc(100% - #{$treeHeaderSelectorWidth});
+      align-items: center;
+
+      &__item {
+        cursor: pointer;
+        flex: 1 1;
+        padding: 0 5px 0 0;
+        overflow: hidden;
+        white-space: nowrap;
+
+        &:first-child {
+          flex: 2 2;
+        }
+      }
+
+      &__text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
 
     .item-actions {
@@ -370,29 +394,6 @@ tree-header {
 
   .tree-action {
     margin-left: auto;
-  }
-
-  .widget-col-title {
-    overflow: hidden;
-    flex: 1 1;
-    padding: 0 5px 0 0;
-
-    &:first-child {
-      flex: 2 2;
-    }
-    span {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    i {
-      font-size: 12px;
-      margin-left: 10px;
-
-      &.fa-sort {
-        opacity: .5;
-      }
-    }
   }
 }
 

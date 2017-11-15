@@ -68,8 +68,7 @@ sub-tree-item {
     width: 200px;
 
     .item-actions.disabled {
-      pointer-events: none;
-      opacity: 0.25;
+      @include disabled();
     }
   }
 

@@ -3,6 +3,8 @@
   Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 */
 
+import Pagination from '../../base-objects/pagination';
+
 describe('GGRC.Components.treePagination', function () {
   'use strict';
   var viewModel;
@@ -13,7 +15,7 @@ describe('GGRC.Components.treePagination', function () {
   });
 
   beforeEach(function () {
-    viewModel.attr('paging', new GGRC.VM.Pagination({
+    viewModel.attr('paging', new Pagination({
       pageSize: 10,
       disabled: false
     }));

@@ -3,6 +3,7 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
+import '../tree/tree-header-selector';
 import tmpl from './templates/mapper-results-columns-configuration.mustache';
 import * as TreeViewUtils from '../../plugins/utils/tree-view-utils';
 

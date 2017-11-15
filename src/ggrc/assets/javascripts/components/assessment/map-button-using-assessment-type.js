@@ -21,12 +21,18 @@
           deferred_to: this.attr('deferredTo')
         };
 
-        GGRC.Controllers.ObjectMapper.openMapper(data);
+        import(/*webpackChunkName: "mapper"*/ '../../controllers/mapper/mapper')
+          .then(mapper => {
+            mapper.ObjectMapper.openMapper(data);
+          });
       },
       onClick: function (el, ev) {
         el.data('type', this.attr('instance.assessment_type'));
         el.data('deferred_to', this.attr('deferredTo'));
-        can.trigger(el, 'openMapper', ev);
+        import(/*webpackChunkName: "mapper"*/ '../../controllers/mapper/mapper')
+          .then(() => {
+            can.trigger(el, 'openMapper', ev);
+          });
       }
     },
     events: {

@@ -3,8 +3,9 @@
  Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
  */
 
-import './sortable-column';
+import '../sortable-column/sortable-column';
 import {REFRESH_RELATED} from '../../events/eventTypes';
+import Pagination from '../base-objects/pagination';
 
 (function (can, GGRC, CMS) {
   'use strict';
@@ -28,7 +29,7 @@ import {REFRESH_RELATED} from '../../events/eventTypes';
         },
         paging: {
           value: function () {
-            return new GGRC.VM.Pagination({pageSizeSelect: [5, 10, 15]});
+            return new Pagination({pageSizeSelect: [5, 10, 15]});
           },
         },
         relatedObjects: {

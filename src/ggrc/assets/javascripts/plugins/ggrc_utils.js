@@ -211,6 +211,21 @@
         data: JSON.stringify(request.data || {})
       });
     },
+    import_request: function (request, isTest) {
+      return $.ajax({
+        type: 'POST',
+        cache: false,
+        contentType: false,
+        processData: false,
+        headers: $.extend({
+          'Content-Type': 'application/json',
+          'X-test-only': `${isTest}`,
+          'X-requested-by': 'GGRC',
+        }, request.headers || {}),
+        url: '/_service/import_csv',
+        data: JSON.stringify(request.data),
+      });
+    },
     hasPending: function (parentInstance, instance, how) {
       var list = parentInstance._pending_joins;
       how = how || 'add';

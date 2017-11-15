@@ -25,6 +25,8 @@ import './get-owner-people-list';
 import './tree-people-with-role-list-field';
 import '../advanced-search/advanced-search-filter-container';
 import '../advanced-search/advanced-search-mapping-container';
+import '../bulk-update-button/bulk-update-button';
+import '../dropdown/multiselect-dropdown';
 import template from './templates/tree-widget-container.mustache';
 import * as StateUtils from '../../plugins/utils/state-utils';
 import {
@@ -39,6 +41,7 @@ import {
   initCounts,
 } from '../../plugins/utils/current-page-utils';
 import * as AdvancedSearch from '../../plugins/utils/advanced-search-utils';
+import Pagination from '../base-objects/pagination';
 
 var viewModel;
 
@@ -208,6 +211,12 @@ viewModel = can.Map.extend({
           model.shortName === 'Assessment';
       },
     },
+    showBulkUpdate: {
+      type: 'boolean',
+      get: function () {
+        return this.attr('options.showBulkUpdate');
+      },
+    },
     show3bbs: {
       type: Boolean,
       get: function () {
@@ -228,7 +237,7 @@ viewModel = can.Map.extend({
     },
     pageInfo: {
       value: function () {
-        return new GGRC.VM.Pagination({
+        return new Pagination({
           pageSizeSelect: [10, 25, 50],
           pageSize: 10});
       },
@@ -361,17 +370,8 @@ viewModel = can.Map.extend({
     this.attr('columns.selected', columns.selected);
   },
   onSort: function (event) {
-    var field = event.field;
-    var sortingInfo = this.attr('sortingInfo');
-    var order;
-
-    if (field !== sortingInfo.sortBy) {
-      sortingInfo.attr('sortBy', field);
-      sortingInfo.attr('sortDirection', 'desc');
-    } else {
-      order = sortingInfo.sortDirection === 'asc' ? 'desc' : 'asc';
-      sortingInfo.attr('sortDirection', order);
-    }
+    this.attr('sortingInfo.sortBy', event.field);
+    this.attr('sortingInfo.sortDirection', event.sortDirection);
 
     this.attr('pageInfo.current', 1);
     this.loadItems();
