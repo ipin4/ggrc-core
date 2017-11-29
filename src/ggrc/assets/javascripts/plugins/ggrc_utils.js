@@ -113,6 +113,9 @@ import Permission from '../permission';
       }
       return inst.tz(currentTimezone).format('MM/DD/YYYY hh:mm:ss A Z');
     },
+    fileSafeCurrentDate() {
+      return moment().format('YYYY-MM-DD_HH-mm-ss');
+    },
     getPickerElement: function (picker) {
       return _.find(_.values(picker), function (val) {
         if (val instanceof Node) {
@@ -122,7 +125,7 @@ import Permission from '../permission';
       });
     },
     download: function (filename, text) {
-      var TMP_FILENAME = 'export_objects.csv';
+      var TMP_FILENAME = filename || 'export_objects.csv';
 
       // a helper for opening the "Save File" dialog to save downloaded data
       function promptSaveFile() {

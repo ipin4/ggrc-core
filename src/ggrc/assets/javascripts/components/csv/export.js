@@ -105,9 +105,10 @@ GGRC.Components('csvExport', {
       GGRC.Utils.export_request({
         data: {
           objects: this.getObjectsForExport(),
-          export_to: this.viewModel.attr('export.chosenFormat')
-        }
-      }).then(function (data) {
+          export_to: this.viewModel.attr('export.chosenFormat'),
+          current_time: GGRC.Utils.fileSafeCurrentDate(),
+        },
+      }).then(function (data, status, jqXHR) {
         var link;
 
         if (this.viewModel.attr('export.chosenFormat') === 'gdrive') {
@@ -121,7 +122,12 @@ GGRC.Components('csvExport', {
             button_view: GGRC.mustache_path + '/modals/close_buttons.mustache'
           });
         } else {
-          GGRC.Utils.download(this.viewModel.attr('export.filename'), data);
+          const contentDisposition =
+            jqXHR.getResponseHeader('Content-Disposition');
+          const match = contentDisposition.match(/filename\=(['"]*)(.*)\1/);
+          const filename = match && match[2] || this.viewModel.attr('export.filename');
+
+          GGRC.Utils.download(filename, data);
         }
       }.bind(this))
       .always(function () {

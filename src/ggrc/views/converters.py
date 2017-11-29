@@ -61,11 +61,13 @@ def parse_export_request():
 
 def handle_export_request():
   """Export request handler"""
+  # pylint: disable=too-many-locals
   try:
     with benchmark("handle export request data"):
       data = parse_export_request()
       objects = data.get("objects")
       export_to = data.get("export_to")
+      current_time = data.get("current_time")
       query_helper = QueryHelper(objects)
       ids_by_type = query_helper.get_ids()
     with benchmark("Generate CSV array"):
@@ -75,7 +77,7 @@ def handle_export_request():
       csv_string = generate_csv_string(csv_data)
     with benchmark("Make response."):
       object_names = "_".join(converter.get_object_names())
-      filename = "{}.csv".format(object_names)
+      filename = "{}_{}.csv".format(object_names, current_time)
       if export_to == "gdrive":
         gfile = fa.create_gdrive_file(csv_string, filename)
         headers = [('Content-Type', 'application/json'), ]
