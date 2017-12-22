@@ -139,10 +139,10 @@ def wait_for_element_text(driver, locator, text):
 
 
 def scroll_to_page_bottom(driver):
-  """Scroll to page bottom using JS.
- Args: driver (base.CustomDriver)
- """
-  driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+  """Scroll to page bottom using JS."""
+  driver.execute_script(
+      "scrollBlock = document.getElementsByClassName('object-area')[0];"
+      "scrollBlock.scrollTo(0,  scrollBlock.scrollHeight);")
 
 
 def is_value_in_attr(element, attr="class", value="active"):
