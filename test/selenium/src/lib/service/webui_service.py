@@ -8,7 +8,7 @@ import re
 from dateutil import parser, tz
 
 from lib import factory
-from lib.constants import objects, url, path, messages, element, regex
+from lib.constants import objects, url, messages, element, regex
 from lib.element.tab_containers import DashboardWidget
 from lib.entities.entity import Entity
 from lib.page import dashboard
@@ -24,6 +24,8 @@ class BaseWebUiService(object):
   def __init__(self, driver, obj_name):
     self.driver = driver
     self.obj_name = obj_name
+    self.obj_type = objects.get_singular(self.obj_name, title=True)
+    self.snapshot_obj_type = None
     self.generic_widget_cls = factory.get_cls_widget(object_name=self.obj_name)
     self.info_widget_cls = factory.get_cls_widget(
         object_name=self.obj_name, is_info=True)
@@ -157,13 +159,13 @@ class BaseWebUiService(object):
             isinstance(objs, list) else
             get_obj_from_info_panel(src_obj, objs))
 
-  def get_list_objs_from_csv(self, path_to_export_dir):
+  def get_list_objs_from_csv(self, path_to_export_dir, exported_file_name):
     """Get and return list of objects from CSV file of exported objects in
     test's temporary directory 'path_to_export_dir'.
     """
     # pylint: disable=invalid-name
     path_to_exported_file = os.path.join(
-        path_to_export_dir, path.EXPORTED_FILE_NAME)
+        path_to_export_dir, exported_file_name)
     dict_list_objs_scopes = file_utils.get_list_objs_scopes_from_csv(
         path_to_csv=path_to_exported_file)
     dict_key = dict_list_objs_scopes.iterkeys().next()
@@ -184,14 +186,32 @@ class BaseWebUiService(object):
     """
     self._open_create_modal_and_fill_data(src_obj, obj).save_and_close()
 
-  def export_objs_via_tree_view(self, src_obj):
+  def export_objs_via_tree_view_and_get_file_name(self, src_obj):
     """Open generic widget of mapped objects, open modal of export from
     Tree View, fill data according to 'src_objs' (filter by mapping to source
     objects), 'mapped_objs' (export objects' types, export objects' filter
     queries) and export objects to test's temporary directory as CSV file.
+    Get and return exported file name string according to object type, snapshot
+    object type and datetime of export clicking.
     """
+    # pylint: disable=invalid-name
+    # reason: to make method's name informative
     objs_widget = self.open_widget_of_mapped_objs(src_obj)
-    objs_widget.tree_view.open_3bbs().select_export().export_objs_to_csv()
+    datetime_of_export_clicking = (
+        objs_widget.tree_view.open_3bbs().select_export().
+        export_objs_to_csv_and_return_datetime())
+    # Control Snapshot_, Control_
+    obj_part = "{obj_type}{snapshot_obj_type}_".format(
+        obj_type=self.obj_type,
+        snapshot_obj_type=(
+            " " + self.snapshot_obj_type if self.snapshot_obj_type else ""))
+    # 2017-12-20_16-20-35, 2018-12-20_16-16-35
+    datetime_part = str(
+        datetime_of_export_clicking.strftime("%Y-%m-%d_%H-%M-%S"))
+    # Control Snapshot_2017-12-20_16-20-35.csv, Control_2018-12-20_16-16-35.csv
+    exported_file_name = "{obj_part}{datetime_part}.csv".format(
+        obj_part=obj_part, datetime_part=datetime_part)
+    return exported_file_name
 
   def _get_unified_mapper(self, src_obj):
     """Open generic widget of mapped objects, open unified mapper modal from
@@ -404,6 +424,8 @@ class SnapshotsWebUiService(BaseWebUiService):
   def __init__(self, driver, obj_name, is_versions_widget):
     super(SnapshotsWebUiService, self).__init__(driver, obj_name)
     self.is_versions_widget = is_versions_widget
+    self.snapshot_obj_type = objects.get_singular(
+        objects.SNAPSHOTS, title=True)
     if self.is_versions_widget:
       self.url_mapped_objs = (
           "{src_obj_url}" + url.Utils.get_widget_name_of_mapped_objs(
