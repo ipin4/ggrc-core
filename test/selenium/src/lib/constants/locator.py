@@ -224,6 +224,7 @@ class ExportPage(object):
   # general
   EXPORT_PAGE_CSS = (By.CSS_SELECTOR, _EXPORT_PAGE)
   EXPORT_PANEL_CSS = (By.CSS_SELECTOR, ".choose-object-wrap " + _EXPORT_PANEL)
+  EXPORT_ACTIONS_PANEL_CSS = (By.CSS_SELECTOR, ".export-group__actions-wrap")
   # labels
   TITLE_LBL_CSS = (By.CSS_SELECTOR, Common.TITLE)
   # user input elements
