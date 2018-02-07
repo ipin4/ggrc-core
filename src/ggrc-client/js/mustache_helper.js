@@ -2383,37 +2383,6 @@ Example:
     return titlesMap[type] ? titlesMap[type] + field : field;
   });
 
-  Mustache.registerHelper(
-    'withRoleForInstance',
-    function (instance, roleName, options) {
-      let userId = GGRC.current_user.id;
-      let internalRoles = GGRC.internal_access_control_roles;
-      let role;
-      let hasRole;
-      instance = resolve_computed(instance);
-      roleName = resolve_computed(roleName);
-      role = internalRoles.find((a) => a.name === roleName);
-
-      if (!role) {
-        console.warn(roleName, 'is not an internal access control name');
-        return;
-      }
-
-      // As a Creator user we seem to invoke this helper with a null instance.
-      // In this case we simply return and wait for the helper to be invoked a
-      // second time with the proper instance object.
-      if (!instance) {
-        return;
-      }
-      hasRole = instance.access_control_list.filter((acl) => {
-        return acl.ac_role_id === role.id && acl.person_id === userId;
-      }).length > 0;
-
-      return options.fn(options.contexts.add({
-        hasRole: hasRole,
-      }));
-    });
-
   Mustache.registerHelper('displayWidgetTab',
     function (widget, instance, options) {
       let displayTab;

@@ -3,35 +3,23 @@
     Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
 }}
 
-{{#withRoleForInstance instance 'Program Managers Mapped'}}
-    {{#if_helpers '\
-       #if' is_info_pin '\
-       and #is_allowed_to_map' page_instance instance '\
-       or #if' is_info_pin '\
-       and #if' instance.viewLink '\
-       or #if' hasRole '\
-       and ^if' instance.archived '\
-       or #system_role' 'Administrator' '\
-       or #system_role' 'Superuser' '\
-       or #is_allowed' 'update' instance '\
-       ' _4_context='for'}}
-    <div class="details-wrap">
-      <a class="btn btn-3bbps dropdown-toggle" href="#" data-toggle="dropdown">
-        <span class="bubble"></span>
-        <span class="bubble"></span>
-        <span class="bubble"></span>
-      </a>
-      <ul class="dropdown-menu three-dots-list" aria-labelledby="drop1" role="menu">
-        {{^if instance.archived}}
-          {{#is_allowed 'update' instance context='for'}}
+  <div class="details-wrap">
+    <a class="btn btn-3bbps dropdown-toggle" href="#" data-toggle="dropdown">
+      <span class="bubble"></span>
+      <span class="bubble"></span>
+      <span class="bubble"></span>
+    </a>
+    <ul class="dropdown-menu three-dots-list" aria-labelledby="drop1" role="menu">
+      {{^if instance.archived}}
+        {{#is_allowed 'update' instance context='for'}}
             {{#if instance.is_snapshotable}}
-              <li>
-                <snapshot-scope-update instance="instance">
-                  <a href="javascript://" can-click="upsertIt">
-                    <i class="fa fa-refresh"></i>
-                    Update objects to latest version</a>
-                </snapshot-scope-update>
-              </li>
+            <li>
+              <snapshot-scope-update instance="instance">
+                <a href="javascript://" can-click="upsertIt">
+                  <i class="fa fa-refresh"></i>
+                  Update objects to latest version</a>
+              </snapshot-scope-update>
+            </li>
             {{/if}}
             {{> /static/mustache/base_objects/edit_object_link.mustache}}
           {{/is_allowed}}
@@ -79,106 +67,104 @@
           {{/if_helpers}}
         {{/if}}
 
-        <li>
-          {{#if_helpers '\
-            #if' hasRole '\
-            or #is_allowed' 'create' 'CycleTaskGroupObjectTask' context=null '\
-            and #is_allowed' 'update' instance context='for'}}
-              <a
-                rel="tooltip"
-                data-placement="left"
-                data-original-title="Create Cycle Task for object"
-                data-object-plural="cycle_task_group_object_tasks"
-                data-modal-class="modal-wide" href="javascript://"
-                data-object-singular="CycleTaskGroupObjectTask"
-                data-toggle="modal-ajax-form"
-                data-modal-reset="reset"
-                data-object-params='{
-                  "pre_mapped_objects": [{
-                    "type": "{{ instance.type }}",
-                    "id": {{ instance.id }}
-                  }],
-                  "modal_title": "Create New Task"}'>
-                <i class="fa fa-calendar-check-o"></i> Create task
+    <li>
+      {{#if_helpers '\
+        #if' hasRole '\
+        or #is_allowed' 'create' 'CycleTaskGroupObjectTask' context=null '\
+        and #is_allowed' 'update' instance context='for'}}
+          <a
+            rel="tooltip"
+            data-placement="left"
+            data-original-title="Create Cycle Task for object"
+            data-object-plural="cycle_task_group_object_tasks"
+            data-modal-class="modal-wide" href="javascript://"
+            data-object-singular="CycleTaskGroupObjectTask"
+            data-toggle="modal-ajax-form"
+            data-modal-reset="reset"
+            data-object-params='{
+              "pre_mapped_objects": [{
+                "type": "{{ instance.type }}",
+                "id": {{ instance.id }}
+              }],
+              "modal_title": "Create New Task"}'>
+            <i class="fa fa-calendar-check-o"></i> Create task
+          </a>
+      {{/if_helpers}}
+    </li>
+
+    <li>
+      <clipboard-link
+              data-test-id="dropdown_settings_get_permalink_75e3bf91"
+              title="Get permalink"
+              notify="true"
+              text="{{get_permalink_for_object instance}}" />
+    </li>
+
+    {{#is_info_pin}}
+      <issue-unmap-dropdown-item
+        {page_instance}="page_instance"
+        {instance}="instance"
+        {options}="options">
+          {{#is_allowed_to_map page_instance instance}}
+            {{^options.is_in_selector}}
+              {{#isNotInScopeModel instance.type}}
+                {{> '/static/mustache/base_objects/unmap.mustache'}}
+              {{/isNotInScopeModel}}
+            {{/options.is_in_selector}}
+          {{/is_allowed_to_map}}
+      </issue-unmap-dropdown-item>
+      {{#if instance.viewLink}}
+        {{#is_allowed "view_object_page" instance}}
+          <li>
+            <a href="{{instance.viewLink}}">
+              <i class="fa fa-long-arrow-right"></i>
+              Open {{instance.class.title_singular}}
+            </a>
+          </li>
+        {{/is_allowed}}
+      {{/if}}
+    {{/is_info_pin}}
+
+    {{^if instance.archived}}
+        {{#if_helpers '\
+            #system_role' 'Administrator' '\
+            or #system_role' 'Superuser' '\
+            or #if' hasRole}}
+            <li>
+              <a data-toggle="modal-ajax-archiveform"
+                  data-object-plural="{{model.table_plural}}"
+                  data-object-singular="{{model.model_singular}}"
+                  data-modal-reset="reset" data-modal-class="modal"
+                  data-object-id="{{instance.id}}" href="javascript://">
+                  <i class="fa fa-archive"></i>
+                    Archive Audit
               </a>
-          {{/if_helpers}}
-        </li>
-
-        <li>
-          <clipboard-link
-                  data-test-id="dropdown_settings_get_permalink_75e3bf91"
-                  title="Get permalink"
-                  notify="true"
-                  text="{{get_permalink_for_object instance}}" />
-        </li>
-
-        {{#is_info_pin}}
-          <issue-unmap-dropdown-item
-            {page_instance}="page_instance"
-            {instance}="instance"
-            {options}="options">
-              {{#is_allowed_to_map page_instance instance}}
-                {{^options.is_in_selector}}
-                  {{#isNotInScopeModel instance.type}}
-                    {{> '/static/mustache/base_objects/unmap.mustache'}}
-                  {{/isNotInScopeModel}}
-                {{/options.is_in_selector}}
-              {{/is_allowed_to_map}}
-          </issue-unmap-dropdown-item>
-          {{#if instance.viewLink}}
-            {{#is_allowed "view_object_page" instance}}
-              <li>
-                <a href="{{instance.viewLink}}">
-                  <i class="fa fa-long-arrow-right"></i>
-                  Open {{instance.class.title_singular}}
-                </a>
-              </li>
-            {{/is_allowed}}
-          {{/if}}
-        {{/is_info_pin}}
-
-        {{^if instance.archived}}
-            {{#if_helpers '\
-               #system_role' 'Administrator' '\
-               or #system_role' 'Superuser' '\
-               or #if' hasRole}}
-               <li>
-                  <a data-toggle="modal-ajax-archiveform"
-                     data-object-plural="{{model.table_plural}}"
-                     data-object-singular="{{model.model_singular}}"
-                     data-modal-reset="reset" data-modal-class="modal"
-                     data-object-id="{{instance.id}}" href="javascript://">
-                     <i class="fa fa-archive"></i>
-                        Archive Audit
-                  </a>
-               </li>
-            {{/if_helpers}}
-            {{#is_allowed 'delete' instance}}
-                <li>
-                  <a data-test-id="dropdown_settings_delete_6a62eaaf"
-                     data-toggle="modal-ajax-deleteform"
-                     data-object-plural="{{model.table_plural}}"
-                     data-object-singular="{{model.model_singular}}"
-                     data-modal-reset="reset" data-modal-class="modal"
-                     data-object-id="{{instance.id}}" href="javascript://">
-                    <i class="fa fa-trash"></i>
-                    Delete
-                  </a>
-                </li>
-            {{/is_allowed}}
-        {{else}}
-            {{#if_helpers '\
-              #system_role' 'Administrator' '\
-              or #system_role' 'Superuser'}}
-                <li>
-                   <unarchive-link instance="instance" notify="true">
-                       <i class="fa fa-archive"></i>
-                       Unarchive Audit
-                   </unarchive-link>
-                </li>
-            {{/if_helpers}}
-        {{/if}}
-      </ul>
-    </div>
-    {{/if_helpers}}
-{{/withRoleForInstance}}
+            </li>
+        {{/if_helpers}}
+        {{#is_allowed 'delete' instance}}
+            <li>
+              <a data-test-id="dropdown_settings_delete_6a62eaaf"
+                  data-toggle="modal-ajax-deleteform"
+                  data-object-plural="{{model.table_plural}}"
+                  data-object-singular="{{model.model_singular}}"
+                  data-modal-reset="reset" data-modal-class="modal"
+                  data-object-id="{{instance.id}}" href="javascript://">
+                <i class="fa fa-trash"></i>
+                Delete
+              </a>
+            </li>
+        {{/is_allowed}}
+    {{else}}
+        {{#if_helpers '\
+          #system_role' 'Administrator' '\
+          or #system_role' 'Superuser'}}
+            <li>
+                <unarchive-link instance="instance" notify="true">
+                    <i class="fa fa-archive"></i>
+                    Unarchive Audit
+                </unarchive-link>
+            </li>
+        {{/if_helpers}}
+    {{/if}}
+  </ul>
+</div>
